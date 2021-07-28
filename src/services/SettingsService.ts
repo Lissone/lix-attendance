@@ -17,7 +17,7 @@ export class SettingsService {
       throw new Error('User already exists.')
     }
 
-    const settings = settingsRepository.create({
+    const settings = await settingsRepository.create({
       chat,
       username
     })
