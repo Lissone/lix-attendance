@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from 'typeorm'
 import { v4 as uuid } from 'uuid'
 
@@ -13,10 +14,10 @@ export class Setting {
   chat: boolean
 
   @CreateDateColumn()
-  createdAt: Date
+  created_at: Date
 
   @UpdateDateColumn()
-  updatedAt: Date
+  updated_at: Date
 
   constructor () {
     if (!this.id) {
