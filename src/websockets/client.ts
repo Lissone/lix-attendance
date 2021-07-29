@@ -51,5 +51,9 @@ io.on('connect', (socket: Socket) => {
     }
 
     await messagesService.create({ user_id, text })
+
+    const allMessages = await messagesService.getAllByUser(user_id)
+
+    socket.emit('client_list_all_messages', allMessages)
   })
 })

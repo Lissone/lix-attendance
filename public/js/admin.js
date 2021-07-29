@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 const socket = io()
 let connectionsUsers = []
 
@@ -37,7 +39,7 @@ function call (id) {
 
   socket.emit('admin_user_in_support', params)
 
-  socket.emit('admin_list_messages_by_user', params, (messages) => {
+  socket.emit('admin_list_messages_by_user', params, (messages) => { // envia parâmetro na requisição e já recebe o retorno
     const divMessages = document.getElementById(
       `allMessages${connection.user_id}`
     )

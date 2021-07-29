@@ -25,7 +25,7 @@ export class MessagesService {
     return message
   }
 
-  async listByUser (user_id: string) {
+  async getAllByUser (user_id: string) {
     const messages = await this.messagesRepository.find({ where: { user_id }, relations: ['user'] })
 
     return messages

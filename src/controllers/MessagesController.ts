@@ -24,7 +24,7 @@ export class MessagesController {
 
       const messagesService = new MessagesService()
 
-      const messages = await messagesService.listByUser(id)
+      const messages = await messagesService.getAllByUser(id)
 
       return res.status(200).json(messages)
     } catch (err) {
