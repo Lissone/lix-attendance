@@ -56,4 +56,15 @@ io.on('connect', (socket: Socket) => {
 
     socket.emit('client_list_all_messages', allMessages)
   })
+
+  socket.on('client_send_to_admin', async ({ text, socket_admin_id }) => {
+    const { user_id } = await connectionsService.getOneBySocketId(socket.id)
+
+    const message = await messagesService.create({ user_id, text })
+
+    io.to(socket_admin_id).emit('admin_receive_message', {
+      message,
+      socket_id: socket.id
+    })
+  })
 })
