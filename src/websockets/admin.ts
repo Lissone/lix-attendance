@@ -34,4 +34,12 @@ io.on('connect', async (socket: Socket) => {
       socket_id: socket.id
     })
   })
+
+  socket.on('admin_user_in_support', async ({ user_id }) => {
+    await connectionsService.updateAdminId(user_id, socket.id)
+
+    const allConnectionsWithoutAdmin = await connectionsService.getAllWithoutAdmin()
+
+    io.emit('admin_list_all_users', allConnectionsWithoutAdmin) // para todos os sockets
+  })
 })
