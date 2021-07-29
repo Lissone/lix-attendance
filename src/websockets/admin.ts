@@ -14,11 +14,24 @@ io.on('connect', async (socket: Socket) => {
 
   io.emit('admin_list_all_users', allConnectionsWithoutAdmin) // para todos os sockets
 
-  socket.on('admin_list_messages_by_user', async (params, callback) => { // recebe parâmetros e função callback
-    const { user_id } = params
-
-    const allMessages = await messagesService.getAllByUser(user_id) // para socket específico
+  socket.on('admin_list_messages_by_user', async ({ user_id }, callback) => { // recebe parâmetros e função callback para devolver resposta
+    const allMessages = await messagesService.getAllByUser(user_id)
 
     callback(allMessages)
+  })
+
+  socket.on('admin_send_message', async ({ text, user_id }) => {
+    await messagesService.create({
+      admin_id: socket.id,
+      user_id,
+      text
+    })
+
+    const { socket_id } = await connectionsService.getOneByUserId(user_id)
+
+    io.to(socket_id).emit('admin_send_to_client', { // emitindo evento para socket específico
+      text,
+      socket_id: socket.id
+    })
   })
 })
