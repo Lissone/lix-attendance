@@ -4,7 +4,7 @@ import { createServer } from 'http'
 import { Server, Socket } from 'socket.io'
 
 import { routes } from './routes'
-import './database'
+import './external/database'
 
 const app = express()
 

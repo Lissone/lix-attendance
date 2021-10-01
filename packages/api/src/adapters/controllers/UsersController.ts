@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { UserService } from '../services/UserService'
+import { UserService } from '../../useCases/UserService'
 
 export class UsersController {
   async create (req: Request, res: Response): Promise<Response> {

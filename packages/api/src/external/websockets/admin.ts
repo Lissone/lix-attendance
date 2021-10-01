@@ -3,8 +3,8 @@ import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
-import { ConnectionsService } from '../services/ConnectionsService'
-import { MessagesService } from '../services/MessagesService'
+import { ConnectionsService } from '../useCases/ConnectionsService'
+import { MessagesService } from '../useCases/MessagesService'
 
 io.on('connect', async (socket: Socket) => {
   const connectionsService = new ConnectionsService()

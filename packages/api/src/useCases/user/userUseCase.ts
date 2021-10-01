@@ -1,7 +1,7 @@
 import { getCustomRepository, Repository } from 'typeorm'
 
 import { User } from '../entities/User'
-import { UsersRepository } from '../repositories/UsersRepository'
+import { UsersRepository } from '../adapters/repositories/UsersRepository'
 
 export class UserService {
   private usersRepository: Repository<User>

@@ -2,7 +2,7 @@
 import { getCustomRepository, Repository } from 'typeorm'
 
 import { Connection } from '../entities/Connection'
-import { ConnectionsRepository } from '../repositories/ConnectionsRepository'
+import { ConnectionsRepository } from '../adapters/repositories/ConnectionsRepository'
 
 interface IConnectionCreate {
   id?:string
@@ -11,7 +11,7 @@ interface IConnectionCreate {
   user_id: string
 }
 
-export class ConnectionsService {
+export class UserUseCase {
   private connectionsRepository: Repository<Connection>
 
   constructor () {

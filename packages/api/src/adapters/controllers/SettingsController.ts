@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { SettingsService } from '../services/SettingsService'
+import { SettingsService } from '../../useCases/SettingsService'
 
 export class SettingsController {
   async create (req: Request, res: Response) {

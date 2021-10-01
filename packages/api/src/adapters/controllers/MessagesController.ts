@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { Request, Response } from 'express'
 
-import { MessagesService } from '../services/MessagesService'
+import { MessagesService } from '../../useCases/MessagesService'
 
 export class MessagesController {
   async create (req: Request, res: Response): Promise<Response> {

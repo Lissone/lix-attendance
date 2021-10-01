@@ -1,7 +1,7 @@
 import { getCustomRepository, Repository } from 'typeorm'
 
 import { Setting } from '../entities/Setting'
-import { SettingsRepository } from '../repositories/SettingsRepository'
+import { SettingsRepository } from '../adapters/repositories/SettingsRepository'
 
 interface ISettingCreate {
   username: string,
