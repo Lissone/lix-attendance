@@ -2,8 +2,9 @@ import 'reflect-metadata'
 import { Socket } from 'socket.io'
 
 import { http, io } from './app'
+import { connection } from './database/dbConfig'
 
-import 'src/external/envConfig'
+import './envConfig'
 import './websockets/client'
 import './websockets/admin'
 
