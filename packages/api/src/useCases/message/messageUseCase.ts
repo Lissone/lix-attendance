@@ -1,32 +1,32 @@
 /* eslint-disable camelcase */
 import { getCustomRepository, Repository } from 'typeorm'
 
-import { Message } from '../entities/Message'
-import { MessagesRepository } from '../adapters/repositories/MessagesRepository'
+import { IMessage } from '@entities/IMessage'
+import { MessageRepository } from '@repositories/MessageRepository'
 
 interface IMessageCreate {
-  admin_id?: string
-  user_id: string
+  adminSocket?: string
+  userId: string
   text: string
 }
 
-export class MessagesService {
-  private messagesRepository: Repository<Message>
+export class MessageUseCase {
+  private messagesRepository: Repository<IMessage>
 
   constructor () {
-    this.messagesRepository = getCustomRepository(MessagesRepository)
+    this.messagesRepository = getCustomRepository(MessageRepository)
   }
 
-  async create ({ admin_id, user_id, text }: IMessageCreate) {
-    const message = await this.messagesRepository.create({ admin_id, text, user_id })
+  async create ({ adminSocket, userId, text }: IMessageCreate) {
+    const message = await this.messagesRepository.create({ adminSocket, text, userId })
 
     await this.messagesRepository.save(message)
 
     return message
   }
 
-  async getAllByUser (user_id: string) {
-    const messages = await this.messagesRepository.find({ where: { user_id }, relations: ['user'] })
+  async getAllByUser (userId: string) {
+    const messages = await this.messagesRepository.find({ where: { userId }, relations: ['user'] })
 
     return messages
   }

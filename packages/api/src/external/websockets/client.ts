@@ -1,11 +1,10 @@
-/* eslint-disable camelcase */
 import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
-import { ConnectionsService } from '../useCases/ConnectionsService'
-import { MessagesService } from '../useCases/MessagesService'
-import { UserService } from '../useCases/UserService'
+import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
+import { MessageUseCase } from '@useCases/message/messageUseCase'
+import { UserUseCase } from '@useCases/user/userUseCase'
 
 interface IParams {
   text: string
@@ -13,58 +12,59 @@ interface IParams {
 }
 
 io.on('connect', (socket: Socket) => {
-  const connectionsService = new ConnectionsService()
-  const messagesService = new MessagesService()
-  const usersService = new UserService()
+  const connectionUseCase = new ConnectionUseCase()
+  const messageUseCase = new MessageUseCase()
+  const userUseCase = new UserUseCase()
 
-  const socket_id = socket.id
+  const userSocket = socket.id
 
   socket.on('client_first_access', async ({ text, email }: IParams) => {
-    let user_id = null
+    let userId = null
 
-    const userAlreadyExists = await usersService.findByEmail(email)
+    const userAlreadyExists = await userUseCase.findByEmail(email)
 
     if (!userAlreadyExists) {
-      const user = await usersService.create(email)
+      const user = await userUseCase.create(email)
 
-      await connectionsService.create({
-        socket_id,
-        user_id: user.id
+      await connectionUseCase.create({
+        userSocket,
+        userId: user.id
       })
 
-      user_id = user.id
+      userId = user.id
     } else {
-      user_id = userAlreadyExists.id
+      userId = userAlreadyExists.id
 
-      const connection = await connectionsService.getOneByUserId(userAlreadyExists.id)
+      const connection = await connectionUseCase.getOneByUserId(userAlreadyExists.id)
 
       if (!connection) {
-        await connectionsService.create({
-          socket_id,
-          user_id: userAlreadyExists.id
+        await connectionUseCase.create({
+          userSocket,
+          userId: userAlreadyExists.id
         })
       } else {
-        connection.socket_id = socket_id
+        connection.userSocket = userSocket
 
-        await connectionsService.create(connection)
+        await connectionUseCase.create(connection)
       }
     }
 
-    await messagesService.create({ user_id, text })
+    await messageUseCase.create({ userId, text })
 
-    const allMessages = await messagesService.getAllByUser(user_id)
+    const allMessages = await messageUseCase.getAllByUser(userId)
 
     socket.emit('client_list_all_messages', allMessages)
 
-    const allUsers = await connectionsService.getAllWithoutAdmin()
+    const allUsers = await connectionUseCase.getAllWithoutAdmin()
 
     io.emit('admin_list_all_users', allUsers)
   })
 
+  // eslint-disable-next-line camelcase
   socket.on('client_send_to_admin', async ({ text, socket_admin_id }) => {
-    const { user_id } = await connectionsService.getOneBySocketId(socket.id)
+    const { userId } = await connectionUseCase.getOneBySocketId(socket.id)
 
-    const message = await messagesService.create({ user_id, text })
+    const message = await messageUseCase.create({ userId, text })
 
     io.to(socket_admin_id).emit('admin_receive_message', {
       message,

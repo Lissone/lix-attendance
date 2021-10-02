@@ -1,42 +1,41 @@
-/* eslint-disable camelcase */
 import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
-import { ConnectionsService } from '../useCases/ConnectionsService'
-import { MessagesService } from '../useCases/MessagesService'
+import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
+import { MessageUseCase } from '@useCases/message/messageUseCase'
 
 io.on('connect', async (socket: Socket) => {
-  const connectionsService = new ConnectionsService()
-  const messagesService = new MessagesService()
+  const connectionsService = new ConnectionUseCase()
+  const messagesService = new MessageUseCase()
 
   const allConnectionsWithoutAdmin = await connectionsService.getAllWithoutAdmin()
 
   io.emit('admin_list_all_users', allConnectionsWithoutAdmin) // para todos os sockets
 
-  socket.on('admin_list_messages_by_user', async ({ user_id }, callback) => { // recebe parâmetros e função callback para devolver resposta
-    const allMessages = await messagesService.getAllByUser(user_id)
+  socket.on('admin_list_messages_by_user', async ({ userId }, callback) => { // recebe parâmetros e função callback para devolver resposta
+    const allMessages = await messagesService.getAllByUser(userId)
 
     callback(allMessages)
   })
 
-  socket.on('admin_send_message', async ({ text, user_id }) => {
+  socket.on('admin_send_message', async ({ text, userId }) => {
     await messagesService.create({
-      admin_id: socket.id,
-      user_id,
+      adminSocket: socket.id,
+      userId,
       text
     })
 
-    const { socket_id } = await connectionsService.getOneByUserId(user_id)
+    const { userSocket } = await connectionsService.getOneByUserId(userId)
 
-    io.to(socket_id).emit('admin_send_to_client', { // emitindo evento para socket específico
+    io.to(userSocket).emit('admin_send_to_client', { // emitindo evento para socket específico
       text,
       socket_id: socket.id
     })
   })
 
-  socket.on('admin_user_in_support', async ({ user_id }) => {
-    await connectionsService.updateAdminId(user_id, socket.id)
+  socket.on('admin_user_in_support', async ({ userId }) => {
+    await connectionsService.updateAdminId(userId, socket.id)
 
     const allConnectionsWithoutAdmin = await connectionsService.getAllWithoutAdmin()
 

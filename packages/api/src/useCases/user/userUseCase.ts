@@ -1,13 +1,13 @@
 import { getCustomRepository, Repository } from 'typeorm'
 
-import { User } from '../entities/User'
-import { UsersRepository } from '../adapters/repositories/UsersRepository'
+import { IUser } from '@entities/IUser'
+import { UserRepository } from '@repositories/UserRepository'
 
-export class UserService {
-  private usersRepository: Repository<User>
+export class UserUseCase {
+  private usersRepository: Repository<IUser>
 
   constructor () {
-    this.usersRepository = getCustomRepository(UsersRepository)
+    this.usersRepository = getCustomRepository(UserRepository)
   }
 
   async create (email) {

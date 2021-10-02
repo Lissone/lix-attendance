@@ -1,16 +1,15 @@
-/* eslint-disable camelcase */
 import { Request, Response } from 'express'
 
-import { MessagesService } from '../../useCases/MessagesService'
+import { MessageUseCase } from '@useCases/message/messageUseCase'
 
-export class MessagesController {
+export class MessageController {
   async create (req: Request, res: Response): Promise<Response> {
     try {
-      const { admin_id, user_id, text } = req.body
+      const { adminSocket, userId, text } = req.body
 
-      const messagesService = new MessagesService()
+      const messagesService = new MessageUseCase()
 
-      const message = await messagesService.create({ admin_id, user_id, text })
+      const message = await messagesService.create({ adminSocket, userId, text })
 
       return res.status(201).json(message)
     } catch (err) {
@@ -22,7 +21,7 @@ export class MessagesController {
     try {
       const { id } = req.params
 
-      const messagesService = new MessagesService()
+      const messagesService = new MessageUseCase()
 
       const messages = await messagesService.getAllByUser(id)
 

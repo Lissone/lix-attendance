@@ -1,29 +1,29 @@
 /* eslint-disable camelcase */
 import { getCustomRepository, Repository } from 'typeorm'
 
-import { Connection } from '../entities/Connection'
-import { ConnectionsRepository } from '../adapters/repositories/ConnectionsRepository'
+import { IConnection } from '@entities/IConnection'
+import { ConnectionRepository } from '@repositories/ConnectionRepository'
 
 interface IConnectionCreate {
   id?:string
-  admin_id?: string
-  socket_id: string
-  user_id: string
+  adminSocket?: string
+  userSocket: string
+  userId: string
 }
 
-export class UserUseCase {
-  private connectionsRepository: Repository<Connection>
+export class ConnectionUseCase {
+  private connectionsRepository: Repository<IConnection>
 
   constructor () {
-    this.connectionsRepository = getCustomRepository(ConnectionsRepository)
+    this.connectionsRepository = getCustomRepository(ConnectionRepository)
   }
 
-  async create ({ socket_id, user_id, admin_id, id }: IConnectionCreate) {
+  async create ({ userSocket, userId, adminSocket, id }: IConnectionCreate) {
     const connection = this.connectionsRepository.create({
       id,
-      admin_id,
-      socket_id,
-      user_id
+      adminSocket,
+      userSocket,
+      userId
     })
 
     await this.connectionsRepository.save(connection)
@@ -31,8 +31,8 @@ export class UserUseCase {
     return connection
   }
 
-  async getOneByUserId (user_id: string) {
-    const connection = await this.connectionsRepository.findOne({ user_id })
+  async getOneByUserId (userId: string) {
+    const connection = await this.connectionsRepository.findOne({ userId })
 
     return connection
   }
@@ -43,18 +43,18 @@ export class UserUseCase {
     return connections
   }
 
-  async getOneBySocketId (socket_id: string) {
-    const connection = await this.connectionsRepository.findOne({ socket_id })
+  async getOneBySocketId (userSocket: string) {
+    const connection = await this.connectionsRepository.findOne({ userSocket })
 
     return connection
   }
 
-  async updateAdminId (user_id: string, admin_id: string) {
-    await this.connectionsRepository
-      .createQueryBuilder()
-      .update(Connection)
-      .set({ admin_id })
-      .where('user_id = :user_id', { user_id })
-      .execute()
+  async updateAdminId (userId: string, adminSocket: string) {
+    // await this.connectionsRepository
+    //   .createQueryBuilder()
+    //   .update(Connection)
+    //   .set({ userId })
+    //   .where('userId = :userId', { userId })
+    //   .execute()
   }
 }
