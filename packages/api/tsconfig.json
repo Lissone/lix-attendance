@@ -20,13 +20,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
-    "baseUrl": "."
-    // "paths": {
-    //   "@external/*": ["src/external/*"],
-    //   "@controllers/*": ["src/adapters/controllers/*"],
-    //   "@repositories/*": ["src/adapters/repositories/*"],
-    //   "@middlewares/*": ["src/adapters/middlewares/*"],
-    //   "@useCases/*": ["src/useCases/*"]
-    // }
+    "baseUrl": ".",
+    "paths": {
+      "@external/*": ["src/external/*"],
+      "@entities/*": ["src/entities/*"],
+      "@controllers/*": ["src/adapters/controllers/*"],
+      "@repositories/*": ["src/adapters/repositories/*"],
+      "@useCases/*": ["src/useCases/*"]
+    }
   }
 }
