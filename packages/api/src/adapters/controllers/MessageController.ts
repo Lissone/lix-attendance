@@ -1,17 +1,19 @@
 import { Request, Response } from 'express'
 
-import { MessageRepository } from '@repositories/messageRepository'
-import { MessageUseCase } from '@useCases/message/messageUseCase'
+import { IMessageUseCase } from '@useCases/message/IMessageUseCase'
 
 export class MessageController {
+  useCase: IMessageUseCase
+
+  constructor (useCase: IMessageUseCase) {
+    this.useCase = useCase
+  }
+
   async create (req: Request, res: Response): Promise<Response> {
     try {
       const { adminSocket, userId, text } = req.body
 
-      const messageRepository = new MessageRepository()
-      const messageUseCase = new MessageUseCase(messageRepository)
-
-      const message = await messageUseCase.create({ adminSocket, userId, text })
+      const message = await this.useCase.create({ adminSocket, userId, text })
 
       return res.status(201).json(message)
     } catch (err) {
@@ -23,10 +25,7 @@ export class MessageController {
     try {
       const { id } = req.params
 
-      const messageRepository = new MessageRepository()
-      const messageUseCase = new MessageUseCase(messageRepository)
-
-      const messages = await messageUseCase.getAllByUser(id)
+      const messages = await this.useCase.getAllByUser(id)
 
       return res.status(200).json(messages)
     } catch (err) {

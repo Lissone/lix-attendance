@@ -1,17 +1,19 @@
 import { Request, Response } from 'express'
 
-import { UserRepository } from '@repositories/userRepository'
-import { UserUseCase } from '@useCases/user/userUseCase'
+import { IUserUseCase } from '@useCases/user/IUserUseCase'
 
 export class UserController {
+  useCase: IUserUseCase
+
+  constructor (useCase: IUserUseCase) {
+    this.useCase = useCase
+  }
+
   async create (req: Request, res: Response): Promise<Response> {
     try {
       const { email } = req.body
 
-      const userRepository = new UserRepository()
-      const usersService = new UserUseCase(userRepository)
-
-      const user = await usersService.create(email)
+      const user = await this.useCase.create(email)
 
       return res.status(200).json(user)
     } catch (err) {
