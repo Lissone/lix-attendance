@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
-import { UserController } from '@controllers/UserController'
-import { MessageController } from '@controllers/MessageController'
+import { UserController } from '@controllers/userController'
+import { MessageController } from '@controllers/messageController'
 
 export const apiRoutes = Router()
 

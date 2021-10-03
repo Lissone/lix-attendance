@@ -10,14 +10,14 @@
       rel="stylesheet"
     />
     <title></title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
     <div class="chat chat_support" id="chat_in_support">
       <div class="in_support_header">
         <span>Em suporte ... </span>
         <div class="icon_close" onclick="closeChat();">
-          <img src="/images/close.png" />
+          <img src="../images/close.png" />
         </div>
       </div>
 
@@ -48,7 +48,7 @@
           id="message_user"
         />
         <div class="send_message_button" id="send_message_button">
-          <img src="/images/send.png" />
+          <img src="../images/send.png" />
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@
       <div class="in_support_header">
         <span>Iniciar um chat de suporte</span>
         <div class="icon_close" onclick="closeChat();">
-          <img src="/images/close.png" />
+          <img src="../images/close.png" />
         </div>
       </div>
       <div class="text_support text_help">
@@ -90,27 +90,14 @@
 
     <div>
       <button class="btn_support" id="btn_support" onclick="openChat();">
-        <img src="/images/chat.png" /> Suporte
+        <img src="../images/chat.png" /> Suporte
       </button>
     </div>
   </body>
 
   <script>
-    onLoad();
+    buttonSupport.style.display = "none";
     const chat = document.getElementById("chat_help");
-
-    function onLoad() {
-      fetch("http://localhost:5000/api/v1/settings/admin").then((result) =>
-        result.json().then((response) => {
-          const buttonSupport = document.getElementById("btn_support");
-          if (!response.chat) {
-            buttonSupport.style.display = "none";
-          }
-
-          buttonSupport.style.display = "1";
-        })
-      );
-    }
 
     function openChat() {
       chat.style.display = "block";
@@ -130,5 +117,5 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.4/dayjs.min.js"></script>
   <script src="https://unpkg.com/mustache@latest"></script>
-  <script src="/js/chat.js"></script>
+  <script src="../js/chat.js"></script>
 </html>

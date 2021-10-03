@@ -34,7 +34,7 @@ const io = new Server(http)
 
 // to create a route for front html
 app.use(express.static(path.join(__dirname, '..', 'public')))
-app.set('views', path.join(__dirname, '..', 'public'))
+app.set('views', path.join(__dirname, '..', '..', 'public'))
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
