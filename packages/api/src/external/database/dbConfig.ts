@@ -12,7 +12,7 @@ const connection = createConnection({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [UserEntity, MessageEntity, ConnectionEntity],
-  synchronize: true,
+  synchronize: false,
   logging: false,
   options: {
     enableArithAbort: true

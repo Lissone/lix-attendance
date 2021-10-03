@@ -1,32 +1,37 @@
-import { getCustomRepository, Repository } from 'typeorm'
-
 import { IUser } from '@entities/IUser'
-import { UserRepository } from '@repositories/UserRepository'
+import { IUserRepository } from './IUserRepository'
+import { IUserUseCase } from './IUserUseCase'
 
-export class UserUseCase {
-  private usersRepository: Repository<IUser>
+export class UserUseCase implements IUserUseCase {
+  repository: IUserRepository
 
-  constructor () {
-    this.usersRepository = getCustomRepository(UserRepository)
+  constructor (repository: IUserRepository) {
+    this.repository = repository
   }
 
-  async create (email) {
-    const userAlreadyExists = await this.usersRepository.findOne({ email })
+  async getOneByEmail (userId: string) : Promise<IUser> {
+    try {
+      const user = await this.repository.getOneByEmail(userId)
 
-    if (userAlreadyExists) {
-      return userAlreadyExists
+      return user
+    } catch (err) {
+      throw new Error(err)
     }
-
-    const user = await this.usersRepository.create({ email })
-
-    await this.usersRepository.save(user)
-
-    return user
   }
 
-  async findByEmail (email: string) {
-    const user = await this.usersRepository.findOne({ email })
+  async create (email: string) : Promise<IUser> {
+    try {
+      const userAlreadyExists = await this.repository.getOneByEmail(email)
 
-    return user
+      if (userAlreadyExists) {
+        return userAlreadyExists
+      }
+
+      const user = await this.repository.create(email)
+
+      return user
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 }

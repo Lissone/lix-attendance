@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 
+import { UserRepository } from '@repositories/userRepository'
 import { UserUseCase } from '@useCases/user/userUseCase'
 
 export class UserController {
@@ -7,7 +8,8 @@ export class UserController {
     try {
       const { email } = req.body
 
-      const usersService = new UserUseCase()
+      const userRepository = new UserRepository()
+      const usersService = new UserUseCase(userRepository)
 
       const user = await usersService.create(email)
 

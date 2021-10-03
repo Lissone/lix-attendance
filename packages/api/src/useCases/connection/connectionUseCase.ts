@@ -1,60 +1,68 @@
-/* eslint-disable camelcase */
-import { getCustomRepository, Repository } from 'typeorm'
-
 import { IConnection } from '@entities/IConnection'
-import { ConnectionRepository } from '@repositories/ConnectionRepository'
+import { IConnectionCreate, IConnectionRepository } from './IConnectionRepository'
+import { IConnectionUseCase } from './IConnectionUseCase'
 
-interface IConnectionCreate {
-  id?:string
-  adminSocket?: string
-  userSocket: string
-  userId: string
-}
+export class ConnectionUseCase implements IConnectionUseCase {
+  repository: IConnectionRepository
 
-export class ConnectionUseCase {
-  private connectionsRepository: Repository<IConnection>
-
-  constructor () {
-    this.connectionsRepository = getCustomRepository(ConnectionRepository)
+  constructor (repository: IConnectionRepository) {
+    this.repository = repository
   }
 
-  async create ({ userSocket, userId, adminSocket, id }: IConnectionCreate) {
-    const connection = this.connectionsRepository.create({
-      id,
-      adminSocket,
-      userSocket,
-      userId
-    })
+  async getAllWithoutAdmin () : Promise<IConnection[]> {
+    try {
+      const connections = await this.repository.getAllWithoutAdmin()
 
-    await this.connectionsRepository.save(connection)
-
-    return connection
+      return connections
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 
-  async getOneByUserId (userId: string) {
-    const connection = await this.connectionsRepository.findOne({ userId })
+  async getOneByUserId (userId: string) : Promise<IConnection | undefined> {
+    try {
+      const connection = await this.repository.getOneByUserId(userId)
 
-    return connection
+      return connection
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 
-  async getAllWithoutAdmin () {
-    const connections = await this.connectionsRepository.find({ where: { admin_id: null }, relations: ['user'] })
+  async getOneByUserSocket (userSocket: string) : Promise<IConnection | undefined> {
+    try {
+      const connection = await this.repository.getOneByUserSocket(userSocket)
 
-    return connections
+      return connection
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 
-  async getOneBySocketId (userSocket: string) {
-    const connection = await this.connectionsRepository.findOne({ userSocket })
+  async create (connection: IConnectionCreate) : Promise<IConnection> {
+    try {
+      const ret = await this.repository.create(connection)
 
-    return connection
+      return ret
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 
-  async updateAdminId (userId: string, adminSocket: string) {
-    // await this.connectionsRepository
-    //   .createQueryBuilder()
-    //   .update(Connection)
-    //   .set({ userId })
-    //   .where('userId = :userId', { userId })
-    //   .execute()
+  async updateAdminSocket (userId: string, adminSocket: string) : Promise<IConnection> {
+    try {
+      const connection = await this.repository.getOneByUserId(userId)
+
+      const connectionWithNewAdminSocket = {
+        adminSocket,
+        ...connection
+      }
+
+      const ret = await this.repository.updateAdminSocket(connectionWithNewAdminSocket)
+
+      return ret
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 }

@@ -1,33 +1,31 @@
-/* eslint-disable camelcase */
-import { getCustomRepository, Repository } from 'typeorm'
-
 import { IMessage } from '@entities/IMessage'
-import { MessageRepository } from '@repositories/MessageRepository'
+import { IMessageRepository, IMessageCreate } from './IMessageRepository'
+import { IMessageUseCase } from './IMessageUseCase'
 
-interface IMessageCreate {
-  adminSocket?: string
-  userId: string
-  text: string
-}
+export class MessageUseCase implements IMessageUseCase {
+  repository: IMessageRepository
 
-export class MessageUseCase {
-  private messagesRepository: Repository<IMessage>
-
-  constructor () {
-    this.messagesRepository = getCustomRepository(MessageRepository)
+  constructor (repository: IMessageRepository) {
+    this.repository = repository
   }
 
-  async create ({ adminSocket, userId, text }: IMessageCreate) {
-    const message = await this.messagesRepository.create({ adminSocket, text, userId })
+  async getAllByUser (userId: string) : Promise<IMessage[]> {
+    try {
+      const messages = await this.repository.getAllByUser(userId)
 
-    await this.messagesRepository.save(message)
-
-    return message
+      return messages
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 
-  async getAllByUser (userId: string) {
-    const messages = await this.messagesRepository.find({ where: { userId }, relations: ['user'] })
+  async create (connection: IMessageCreate) : Promise<IMessage> {
+    try {
+      const ret = await this.repository.create(connection)
 
-    return messages
+      return ret
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 }

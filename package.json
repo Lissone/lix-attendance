@@ -6,8 +6,5 @@
   "description": "Talk to an admin to clear all your doubts in real time.",
   "author": "Leonardo Dias Lissone Santomero <leonardo.lissonez@gmail.com>",
   "license": "MIT",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ]
+  "private": true
 }

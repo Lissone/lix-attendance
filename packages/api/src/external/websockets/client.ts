@@ -2,6 +2,10 @@ import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
+import { ConnectionRepository } from '@repositories/connectionRepository'
+import { MessageRepository } from '@repositories/messageRepository'
+import { UserRepository } from '@repositories/userRepository'
+
 import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
 import { MessageUseCase } from '@useCases/message/messageUseCase'
 import { UserUseCase } from '@useCases/user/userUseCase'
@@ -12,16 +16,20 @@ interface IParams {
 }
 
 io.on('connect', (socket: Socket) => {
-  const connectionUseCase = new ConnectionUseCase()
-  const messageUseCase = new MessageUseCase()
-  const userUseCase = new UserUseCase()
+  const connectionRepository = new ConnectionRepository()
+  const messageRepository = new MessageRepository()
+  const userRepository = new UserRepository()
+
+  const connectionUseCase = new ConnectionUseCase(connectionRepository)
+  const messageUseCase = new MessageUseCase(messageRepository)
+  const userUseCase = new UserUseCase(userRepository)
 
   const userSocket = socket.id
 
   socket.on('client_first_access', async ({ text, email }: IParams) => {
     let userId = null
 
-    const userAlreadyExists = await userUseCase.findByEmail(email)
+    const userAlreadyExists = await userUseCase.getOneByEmail(email)
 
     if (!userAlreadyExists) {
       const user = await userUseCase.create(email)
@@ -62,7 +70,7 @@ io.on('connect', (socket: Socket) => {
 
   // eslint-disable-next-line camelcase
   socket.on('client_send_to_admin', async ({ text, socket_admin_id }) => {
-    const { userId } = await connectionUseCase.getOneBySocketId(socket.id)
+    const { userId } = await connectionUseCase.getOneByUserSocket(socket.id)
 
     const message = await messageUseCase.create({ userId, text })
 
