@@ -5,8 +5,15 @@
 }
 
 :root {
-  --background: #494949;
-  --light: #f8f9fa;
+  --blue-500: #3D56B2;
+  --blue-400: #5C7AEA;
+  --green-400: #57CC99;
+  --gray-500: #787A91;
+  --gray-blue-800: #393E46;
+  --gray-800: #494949;
+  --gray-300: #b3b3b3;
+  --light: #F7F6F2;
+  --background: #E6E6E6;
 }
 
 @media (max-width: 1080px) {
@@ -38,7 +45,7 @@ body, input, textarea, button {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
-  color: var(--light);
+  color: var(--gray-800);
 }
 
 h1 {
