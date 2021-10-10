@@ -2,7 +2,14 @@ import Head from 'next/head'
 import { BiSend } from 'react-icons/bi'
 import { RiArrowGoBackFill } from 'react-icons/ri'
 
-import styles from '../styles/client.module.scss'
+import {
+  Container,
+  ChatContainer,
+  ChatContent,
+  Information,
+  AdminMessage,
+  ClientMessage
+} from '../styles/client'
 
 export default function Client() {
   return (
@@ -11,8 +18,8 @@ export default function Client() {
         <title>Cliente help - LixAttendance</title>
       </Head>
 
-      <main className={styles.container}>
-        <div className={styles.chatCard}>
+      <Container>
+        <ChatContainer>
           <header>
             <div>
               <span>Atendente</span>
@@ -22,15 +29,15 @@ export default function Client() {
             <RiArrowGoBackFill size={40} />
           </header>
 
-          <div className={styles.chat}>
-            <div className={styles.information}>
+          <ChatContent>
+            <Information>
               <h4>
                 Envie sua dúvida para nossos atendentes e aguarde eles
                 retornarem com a resposta
               </h4>
-            </div>
+            </Information>
 
-            <div className={styles.adminMessage}>
+            <AdminMessage>
               <div>
                 <span>
                   Olá gabriesdfsdfsdfsdf sdfsdfsdf sdfs dfsdf sdfsdfsdf
@@ -39,16 +46,16 @@ export default function Client() {
               </div>
 
               <p>19:54</p>
-            </div>
+            </AdminMessage>
 
-            <div className={styles.clientMessage}>
+            <ClientMessage>
               <div>
                 <span>Bom dia!</span>
               </div>
 
               <p>20:22</p>
-            </div>
-          </div>
+            </ClientMessage>
+          </ChatContent>
 
           <footer>
             <input maxLength={250} placeholder="Digite sua mensagem aqui" />
@@ -58,8 +65,8 @@ export default function Client() {
               <BiSend size={20} />
             </button>
           </footer>
-        </div>
-      </main>
+        </ChatContainer>
+      </Container>
     </>
   )
 }

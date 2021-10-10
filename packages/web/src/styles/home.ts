@@ -1,4 +1,6 @@
-.container {
+import styled from 'styled-components'
+
+export const Container = styled.div`
   height: 100vh;
 
   display: flex;
@@ -49,6 +51,33 @@
       }
     }
 
+    > div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      img {
+        width: 300px;
+        margin-bottom: 3rem;
+      }
+
+      span {
+        margin-top: 6rem;
+
+        color: var(--gray-blue-500);
+
+        a {
+          color: var(--blue-500);
+
+          transition: filter 0.2s;
+
+          &:hover {
+            filter: brightness(0.7);
+          }
+        }
+      }
+    }
+
     form {
       width: 26rem;
 
@@ -60,10 +89,10 @@
       input {
         width: 100%;
         padding: 0.8rem 1.5rem;
-        
+
         border: 1.5px solid var(--gray-800);
         border-radius: 0.35rem;
-        
+
         color: var(--gray-blue-800);
         background: var(--light);
       }
@@ -72,7 +101,7 @@
         width: 100%;
         margin-top: 1rem;
         padding: 0.8rem 1.5rem;
-        
+
         display: flex;
         justify-content: center;
         align-items: center;
@@ -80,7 +109,7 @@
 
         border: 0;
         border-radius: 0.35rem;
-        
+
         color: var(--gray-blue-800);
         background: var(--green-400);
 
@@ -92,31 +121,4 @@
       }
     }
   }
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  img {
-    width: 300px;
-    margin-bottom: 3rem;
-  }
-
-  span {
-    margin-top: 6rem;
-
-    color: var(--gray-blue-500);
-
-    a {
-      color: var(--blue-500);
-
-      transition: filter 0.2s;
-
-      &:hover {
-        filter: brightness(0.7)
-      }
-    }
-  }
-}
+`

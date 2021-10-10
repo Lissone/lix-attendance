@@ -3,7 +3,7 @@ import { FormEvent, useState } from 'react'
 import { BsBoxArrowRight } from 'react-icons/bs'
 import { FiHelpCircle } from 'react-icons/fi'
 
-import styles from '../styles/home.module.scss'
+import { Container } from '../styles/home'
 
 export default function Home() {
   const [email, setEmail] = useState('')
@@ -20,7 +20,7 @@ export default function Home() {
         <title>Home - LixAttendance</title>
       </Head>
 
-      <div className={styles.container}>
+      <Container>
         <aside>
           <div />
 
@@ -37,7 +37,7 @@ export default function Home() {
             <FiHelpCircle size={30} />
           </header>
 
-          <div className={styles.content}>
+          <div>
             <img src="/logo.svg" alt="LixAttendance" />
 
             <form onSubmit={handleSignIn}>
@@ -65,7 +65,7 @@ export default function Home() {
             </span>
           </div>
         </main>
-      </div>
+      </Container>
     </>
   )
 }

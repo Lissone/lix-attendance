@@ -2,7 +2,15 @@ import Head from 'next/head'
 import { BiSend } from 'react-icons/bi'
 import { RiArrowGoBackFill } from 'react-icons/ri'
 
-import styles from '../styles/admin.module.scss'
+import {
+  Container,
+  SidebarChat,
+  ClientContact,
+  ChatContainer,
+  ChatContent,
+  AdminMessage,
+  ClientMessage
+} from '../styles/admin'
 
 export default function Admin() {
   return (
@@ -11,8 +19,8 @@ export default function Admin() {
         <title>Admin - LixAttendance</title>
       </Head>
 
-      <main className={styles.container}>
-        <aside className={styles.sidebar}>
+      <Container>
+        <SidebarChat>
           <header>
             <div>
               <span>Bem vindo(a),</span>
@@ -23,7 +31,7 @@ export default function Admin() {
           </header>
 
           <div>
-            <div className={styles.clientContact}>
+            <ClientContact>
               <div>
                 <h4>Rodrigo Lissone</h4>
 
@@ -31,9 +39,9 @@ export default function Admin() {
               </div>
 
               <button type="button">Conversar</button>
-            </div>
+            </ClientContact>
 
-            <div className={styles.clientContact}>
+            <ClientContact>
               <div>
                 <h4>Fernanda Mendonça</h4>
 
@@ -41,11 +49,11 @@ export default function Admin() {
               </div>
 
               <button type="button">Conversar</button>
-            </div>
+            </ClientContact>
           </div>
-        </aside>
+        </SidebarChat>
 
-        <div className={styles.chatCard}>
+        <ChatContainer>
           <header>
             <div>
               <span>Cliente</span>
@@ -55,8 +63,8 @@ export default function Admin() {
             {/* <RiArrowGoBackFill size={40} /> */}
           </header>
 
-          <div className={styles.chat}>
-            <div className={styles.adminMessage}>
+          <ChatContent>
+            <AdminMessage>
               <div>
                 <span>
                   Olá gabriesdfsdfsdfsdf sdfsdfsdf sdfs dfsdf sdfsdfsdf
@@ -65,16 +73,16 @@ export default function Admin() {
               </div>
 
               <p>19:54</p>
-            </div>
+            </AdminMessage>
 
-            <div className={styles.clientMessage}>
+            <ClientMessage>
               <div>
                 <span>Bom dia!</span>
               </div>
 
               <p>20:22</p>
-            </div>
-          </div>
+            </ClientMessage>
+          </ChatContent>
 
           <footer>
             <input maxLength={250} placeholder="Digite sua mensagem aqui" />
@@ -84,8 +92,8 @@ export default function Admin() {
               <BiSend size={20} />
             </button>
           </footer>
-        </div>
-      </main>
+        </ChatContainer>
+      </Container>
     </>
   )
 }
