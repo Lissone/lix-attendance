@@ -12,8 +12,10 @@ export const Container = styled.div`
 
     background: var(--blue-500);
 
-    div {
-      height: 30rem;
+    img {
+      height: 32rem;
+
+      margin-bottom: 6rem;
     }
 
     h1 {
@@ -90,14 +92,18 @@ export const Container = styled.div`
         width: 100%;
         padding: 0.8rem 1.5rem;
 
-        border: 1.5px solid var(--gray-800);
+        border: 1px solid var(--gray-100);
         border-radius: 0.35rem;
 
         color: var(--gray-blue-800);
         background: var(--light);
       }
 
-      button {
+      input + input {
+        margin-top: 0.5rem;
+      }
+
+      > button {
         width: 100%;
         margin-top: 1rem;
         padding: 0.8rem 1.5rem;
@@ -120,5 +126,51 @@ export const Container = styled.div`
         }
       }
     }
+  }
+`
+
+export const UserTypeContainer = styled.div`
+  width: 100%;
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+
+    color: var(--gray-blue-800);
+  }
+
+  div {
+    width: 100%;
+    margin: 1rem 0;
+
+    display: flex;
+    gap: 1rem;
+  }
+`
+
+interface RadioBoxProps {
+  isActive: boolean
+}
+
+export const RadioBox = styled.button<RadioBoxProps>`
+  width: 100%;
+  height: 4rem;
+
+  border: 1px solid var(--gray-100);
+  border-radius: 0.35rem;
+  border-color: ${props =>
+    props.isActive ? 'var(--gray-300)' : 'var(--gray-100)'};
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--gray-blue-800);
+  background: ${props => (props.isActive ? 'var(--blue-200)' : 'transparent')};
+
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: var(--gray-300);
   }
 `

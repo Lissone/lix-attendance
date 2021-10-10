@@ -1,17 +1,34 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 import { BsBoxArrowRight } from 'react-icons/bs'
 import { FiHelpCircle } from 'react-icons/fi'
 
-import { Container } from '../styles/home'
+import { Container, UserTypeContainer, RadioBox } from '../styles/home'
 
 export default function Home() {
+  const [type, setType] = useState('client')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+
+  const router = useRouter()
 
   function handleSignIn(event: FormEvent) {
     event.preventDefault()
 
-    console.log(email)
+    const user = {
+      type,
+      name,
+      email
+    }
+
+    console.log(user)
+
+    if (type === 'client') {
+      router.push('/client')
+    } else {
+      router.push('/admin')
+    }
   }
 
   return (
@@ -22,7 +39,7 @@ export default function Home() {
 
       <Container>
         <aside>
-          <div />
+          <img src="/attendance-banner.png" alt="Atendimento" />
 
           <h1>Melhor chat online de suporte ao usuário</h1>
 
@@ -34,13 +51,41 @@ export default function Home() {
 
         <main>
           <header>
-            <FiHelpCircle size={30} />
+            <FiHelpCircle size={40} />
           </header>
 
           <div>
             <img src="/logo.svg" alt="LixAttendance" />
 
             <form onSubmit={handleSignIn}>
+              <UserTypeContainer>
+                <h3>Escolha seu tipo de usuário</h3>
+
+                <div>
+                  <RadioBox
+                    type="button"
+                    onClick={() => setType('client')}
+                    isActive={type === 'client'}
+                  >
+                    Cliente
+                  </RadioBox>
+
+                  <RadioBox
+                    type="button"
+                    onClick={() => setType('admin')}
+                    isActive={type === 'admin'}
+                  >
+                    Admin
+                  </RadioBox>
+                </div>
+              </UserTypeContainer>
+
+              <input
+                value={name}
+                onChange={event => setName(event.target.value)}
+                placeholder="Digite seu nome"
+              />
+
               <input
                 value={email}
                 onChange={event => setEmail(event.target.value)}
