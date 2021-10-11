@@ -24,7 +24,7 @@ export const SidebarChat = styled.aside`
     h1 {
       font-size: 1.5rem;
 
-      color: var(--gray-100);
+      color: var(--light);
     }
 
     svg {

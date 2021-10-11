@@ -1,6 +1,6 @@
 import Head from 'next/head'
-import { BiSend } from 'react-icons/bi'
-import { RiArrowGoBackFill } from 'react-icons/ri'
+import Link from 'next/link'
+import { BiSend, BiExit } from 'react-icons/bi'
 
 import {
   Container,
@@ -26,7 +26,9 @@ export default function Client() {
               <h2>Leonardo Dias Lissone</h2>
             </div>
 
-            <RiArrowGoBackFill size={40} />
+            <Link href="/">
+              <BiExit size={40} />
+            </Link>
           </header>
 
           <ChatContent>
