@@ -1,13 +1,13 @@
 import { IMessage } from '@entities/IMessage'
 
 interface IMessageCreate {
-  adminSocket?: string
-  userId: string
+  adminId?: string
+  clientId: string
   text: string
 }
 
 interface IMessageRepository {
-  getAllByUser(userId: string) : Promise<IMessage[]>
+  getAllByUser(clientId: string) : Promise<IMessage[]>
   create(message: IMessageCreate) : Promise<IMessage>
 }
 

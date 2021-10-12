@@ -15,8 +15,8 @@ export class MessageRepository implements IMessageRepository {
     return connections
   }
 
-  async create ({ adminSocket, userId, text }: IMessageCreate) : Promise<IMessage> {
-    const message = await this.repository.create({ adminSocket, text, userId })
+  async create ({ adminId, clientId, text }: IMessageCreate) : Promise<IMessage> {
+    const message = await this.repository.create({ adminId, clientId, text })
 
     await this.repository.save(message)
 

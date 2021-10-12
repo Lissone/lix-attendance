@@ -11,9 +11,9 @@ export class MessageController {
 
   async create (req: Request, res: Response): Promise<Response> {
     try {
-      const { adminSocket, userId, text } = req.body
+      const { adminId, clientId, text } = req.body
 
-      const message = await this.useCase.create({ adminSocket, userId, text })
+      const message = await this.useCase.create({ adminId, clientId, text })
 
       return res.status(201).json(message)
     } catch (err) {

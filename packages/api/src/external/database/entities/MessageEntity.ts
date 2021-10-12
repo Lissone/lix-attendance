@@ -10,11 +10,11 @@ const MessageEntity = new EntitySchema<IMessage>({
       primary: true,
       generated: 'uuid'
     },
-    adminSocket: {
+    adminId: {
       type: String,
       nullable: true
     },
-    userId: {
+    clientId: {
       type: String,
       nullable: false
     },
@@ -34,10 +34,18 @@ const MessageEntity = new EntitySchema<IMessage>({
     }
   },
   relations: {
-    user: {
+    admin: {
       type: 'many-to-one',
       joinColumn: ({
-        name: 'userId'
+        name: 'adminId'
+      }),
+      target: 'user',
+      nullable: true
+    },
+    client: {
+      type: 'many-to-one',
+      joinColumn: ({
+        name: 'clientId'
       }),
       target: 'user',
       nullable: false

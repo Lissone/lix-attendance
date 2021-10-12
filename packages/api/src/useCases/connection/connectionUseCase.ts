@@ -49,9 +49,9 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
-  async updateAdminSocket (userId: string, adminSocket: string) : Promise<IConnection> {
+  async updateAdminSocket (clientId: string, adminSocket: string) : Promise<IConnection> {
     try {
-      const connection = await this.repository.getOneByUserId(userId)
+      const connection = await this.repository.getOneByUserId(clientId)
 
       const connectionWithNewAdminSocket = {
         adminSocket,

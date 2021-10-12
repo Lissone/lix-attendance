@@ -8,6 +8,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   :root {
+    --red-300: #DF2E2E;
     --blue-200: #A2D2FF;
     --blue-500: #3D56B2;
     --blue-400: #5C7AEA;

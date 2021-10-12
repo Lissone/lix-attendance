@@ -1,33 +1,65 @@
+/* eslint-disable react/jsx-no-bind */
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { FormEvent, useState } from 'react'
+import { useState, useRef } from 'react'
+import * as Yup from 'yup'
 import { BsBoxArrowRight } from 'react-icons/bs'
 import { FiHelpCircle } from 'react-icons/fi'
 
-import { Container, UserTypeContainer, RadioBox } from '../styles/home'
+import { useAuth } from '../hooks/useAuth'
 
-export default function Home() {
+import { Input } from '../components/Input'
+
+import { Container, Form, UserTypeContainer, RadioBox } from '../styles/home'
+
+interface SignInData {
+  email: string
+  name: string
+}
+
+export default function Home({ socket }: any) {
+  const { signIn } = useAuth()
+
+  const formRef = useRef(null)
   const [type, setType] = useState('client')
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
 
-  const router = useRouter()
+  async function handleSubmit(data: SignInData, { reset }) {
+    try {
+      const socketId = socket.id
 
-  function handleSignIn(event: FormEvent) {
-    event.preventDefault()
+      const schema = Yup.object().shape({
+        name: Yup.string()
+          .min(5, 'Mínimo 4 caracteres')
+          .required('Nome obrigatório'),
+        email: Yup.string()
+          .email('Digite um email válido')
+          .required('Email é obrigatório')
+      })
 
-    const user = {
-      type,
-      name,
-      email
-    }
+      await schema.validate(data, {
+        abortEarly: false
+      })
 
-    console.log(user)
+      const newUser = {
+        type,
+        ...data,
+        socket: socketId
+      }
 
-    if (type === 'client') {
-      router.push('/client')
-    } else {
-      router.push('/admin')
+      await signIn(newUser)
+
+      formRef.current.setErrors({})
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errorMessages = {}
+
+        err.inner.forEach(error => {
+          errorMessages[error.path] = error.message
+        })
+
+        formRef.current.setErrors(errorMessages)
+      } else {
+        reset()
+      }
     }
   }
 
@@ -57,7 +89,7 @@ export default function Home() {
           <div>
             <img src="/logo.svg" alt="LixAttendance" />
 
-            <form onSubmit={handleSignIn}>
+            <Form ref={formRef} onSubmit={handleSubmit}>
               <UserTypeContainer>
                 <h3>Escolha seu tipo de usuário</h3>
 
@@ -80,23 +112,14 @@ export default function Home() {
                 </div>
               </UserTypeContainer>
 
-              <input
-                value={name}
-                onChange={event => setName(event.target.value)}
-                placeholder="Digite seu nome"
-              />
-
-              <input
-                value={email}
-                onChange={event => setEmail(event.target.value)}
-                placeholder="Digite seu email"
-              />
+              <Input name="name" placeholder="Digite seu nome" />
+              <Input name="email" placeholder="Digite seu email" />
 
               <button type="submit">
                 Entrar
                 <BsBoxArrowRight size={20} />
               </button>
-            </form>
+            </Form>
 
             <span>
               Desenvolvido por{' '}

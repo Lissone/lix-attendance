@@ -2,12 +2,12 @@ import { IUser } from './IUser'
 
 interface IConnection {
   id: string
-  adminSocket?: string
-  userId: string
-  userSocket: string
+  adminId?: string
+  clientId: string
   createdAt: Date
   updatedAt: Date
-  user: IUser
+  admin?: IUser
+  client: IUser
 }
 
 export { IConnection }

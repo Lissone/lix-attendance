@@ -15,24 +15,25 @@ export class ConnectionRepository implements IConnectionRepository {
     return connections
   }
 
-  async getOneByUserId (userId: string) : Promise<IConnection | undefined> {
-    const connection = await this.repository.findOne({ userId })
+  async getOneByUserId (clientId: string) : Promise<IConnection | undefined> {
+    const connection = await this.repository.findOne({ clientId })
 
     return connection
   }
 
-  async getOneByUserSocket (userSocket: string) : Promise<IConnection | undefined> {
-    const connection = await this.repository.findOne({ userSocket })
+  async getOneByUserSocket (clientSocket: string) : Promise<IConnection | undefined> {
+    const connection = await this.repository.findOne({ clientSocket })
 
     return connection
   }
 
-  async create ({ id, adminSocket, userSocket, userId }: IConnectionCreate) : Promise<IConnection> {
+  async create ({ id, adminId, adminSocket, clientId, clientSocket }: IConnectionCreate) : Promise<IConnection> {
     const connection = this.repository.create({
       id,
+      adminId,
       adminSocket,
-      userSocket,
-      userId
+      clientId,
+      clientSocket
     })
 
     await this.repository.save(connection)

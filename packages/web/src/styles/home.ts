@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Form as Unform } from '@unform/web'
 
 export const Container = styled.div`
   height: 100vh;
@@ -79,52 +80,41 @@ export const Container = styled.div`
         }
       }
     }
+  }
+`
 
-    form {
-      width: 26rem;
+export const Form = styled(Unform)`
+  width: 26rem;
 
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-      input {
-        width: 100%;
-        padding: 0.8rem 1.5rem;
+  div + div {
+    margin-top: 0.5rem;
+  }
 
-        border: 1px solid var(--gray-100);
-        border-radius: 0.35rem;
+  > button {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.8rem 1.5rem;
 
-        color: var(--gray-blue-800);
-        background: var(--light);
-      }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
 
-      input + input {
-        margin-top: 0.5rem;
-      }
+    border: 0;
+    border-radius: 0.35rem;
 
-      > button {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.8rem 1.5rem;
+    color: var(--gray-blue-800);
+    background: var(--green-400);
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
+    transition: filter 0.2s;
 
-        border: 0;
-        border-radius: 0.35rem;
-
-        color: var(--gray-blue-800);
-        background: var(--green-400);
-
-        transition: filter 0.2s;
-
-        &:hover {
-          filter: brightness(0.9);
-        }
-      }
+    &:hover {
+      filter: brightness(0.9);
     }
   }
 `

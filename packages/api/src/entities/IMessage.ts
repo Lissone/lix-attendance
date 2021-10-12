@@ -2,12 +2,13 @@ import { IUser } from './IUser'
 
 interface IMessage {
   id: string
-  adminSocket: string
-  userId: string
+  adminId?: string
+  clientId: string
   text: string
   createdAt: Date
   updatedAt: Date
-  user: IUser
+  admin?: IUser
+  client: IUser
 }
 
 export { IMessage }

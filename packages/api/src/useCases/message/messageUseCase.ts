@@ -9,9 +9,9 @@ export class MessageUseCase implements IMessageUseCase {
     this.repository = repository
   }
 
-  async getAllByUser (userId: string) : Promise<IMessage[]> {
+  async getAllByUser (clientId: string) : Promise<IMessage[]> {
     try {
-      const messages = await this.repository.getAllByUser(userId)
+      const messages = await this.repository.getAllByUser(clientId)
 
       return messages
     } catch (err) {

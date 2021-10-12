@@ -19,7 +19,7 @@ const messageRepository = new MessageRepository()
 const messageUseCase = new MessageUseCase(messageRepository)
 const messageController = new MessageController(messageUseCase)
 
-apiRoutes.post('/api/v1/users', (req, res) => userController.create(req, res))
+apiRoutes.post('/api/v1/users', (req, res) => userController.signIn(req, res))
 
 apiRoutes.post('/api/v1/messages', (req, res) => messageController.create(req, res))
 apiRoutes.get('/api/v1/messages/:id', (req, res) => messageController.getAllByUser(req, res))

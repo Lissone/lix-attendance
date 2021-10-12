@@ -1,6 +1,7 @@
 import { Repository, getRepository } from 'typeorm'
 
 import { IUser } from '@entities/IUser'
+import { IUserCreate } from '@useCases/user/IUserUseCase'
 import { UserEntity } from '@external/database/entities/UserEntity'
 import { IUserRepository } from '@useCases/user/IUserRepository'
 
@@ -15,11 +16,17 @@ export class UserRepository implements IUserRepository {
     return user
   }
 
-  async create (email: string) : Promise<IUser> {
-    const user = await this.repository.create({ email })
+  async create (user: IUserCreate) : Promise<IUser> {
+    const ret = await this.repository.create(user)
 
     await this.repository.save(user)
 
-    return user
+    return ret
+  }
+
+  async update (user: IUser) : Promise<IUser> {
+    const ret = await this.repository.save(user)
+
+    return ret
   }
 }

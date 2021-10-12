@@ -9,13 +9,13 @@ export class UserController {
     this.useCase = useCase
   }
 
-  async create (req: Request, res: Response): Promise<Response> {
+  async signIn (req: Request, res: Response): Promise<Response> {
     try {
-      const { email } = req.body
+      const { user } = req.body
 
-      const user = await this.useCase.create(email)
+      const ret = await this.useCase.create(user)
 
-      return res.status(200).json(user)
+      return res.status(200).json({ user: ret })
     } catch (err) {
       return res.status(500).json({ message: err.message })
     }

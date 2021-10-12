@@ -1,6 +1,6 @@
 import { IUser } from '@entities/IUser'
 import { IUserRepository } from './IUserRepository'
-import { IUserUseCase } from './IUserUseCase'
+import { IUserCreate, IUserUseCase } from './IUserUseCase'
 
 export class UserUseCase implements IUserUseCase {
   repository: IUserRepository
@@ -9,9 +9,9 @@ export class UserUseCase implements IUserUseCase {
     this.repository = repository
   }
 
-  async getOneByEmail (userId: string) : Promise<IUser> {
+  async getOneByEmail (email: string) : Promise<IUser> {
     try {
-      const user = await this.repository.getOneByEmail(userId)
+      const user = await this.repository.getOneByEmail(email)
 
       return user
     } catch (err) {
@@ -19,17 +19,26 @@ export class UserUseCase implements IUserUseCase {
     }
   }
 
-  async create (email: string) : Promise<IUser> {
+  async create (user: IUserCreate) : Promise<IUser> {
     try {
-      const userAlreadyExists = await this.repository.getOneByEmail(email)
+      const userAlreadyExists = await this.repository.getOneByEmail(user.email)
 
       if (userAlreadyExists) {
-        return userAlreadyExists
+        if (userAlreadyExists.socket !== user.socket) {
+          const userUpdated = await this.repository.update({
+            ...userAlreadyExists,
+            socket: user.socket
+          })
+
+          return userUpdated
+        } else {
+          return userAlreadyExists
+        }
       }
 
-      const user = await this.repository.create(email)
+      const ret = await this.repository.create(user)
 
-      return user
+      return ret
     } catch (err) {
       throw new Error(err)
     }
