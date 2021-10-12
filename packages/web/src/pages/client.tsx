@@ -110,7 +110,7 @@ export default function Client({ socket }: any) {
             )}
 
             {messages.map(message =>
-              message.adminId === null ? (
+              message.adminId === null || message.adminId === undefined ? (
                 <ClientMessage key={message.id}>
                   <div>
                     <span>{message.text}</span>

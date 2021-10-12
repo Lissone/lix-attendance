@@ -154,6 +154,9 @@ export const ChatContainer = styled.div`
 
 export const ChatContent = styled.div`
   padding: 0 1rem;
+  margin-bottom: 5.5rem;
+
+  overflow-y: scroll;
 `
 
 export const AdminMessage = styled.div`
