@@ -23,6 +23,9 @@ interface Message {
   clientId: string
   text: string
   createdHour?: string
+  admin?: {
+    name: string
+  }
 }
 
 export default function Client({ socket }: any) {
@@ -91,7 +94,11 @@ export default function Client({ socket }: any) {
           <header>
             <div>
               <span>Atendente</span>
-              <h2>Leonardo Dias Lissone</h2>
+              {messages[0]?.admin ? (
+                <h2>{messages[0]?.admin.name}</h2>
+              ) : (
+                <h2>Aguardando atendimento...</h2>
+              )}
             </div>
 
             <Link href="/">
