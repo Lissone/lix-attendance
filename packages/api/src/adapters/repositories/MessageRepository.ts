@@ -9,17 +9,17 @@ export class MessageRepository implements IMessageRepository {
     return getRepository(MessageEntity)
   }
 
-  async getAllByUser () : Promise<IMessage[]> {
-    const connections = await this.repository.find({ where: { adminSocket: null }, relations: ['user'] })
+  async getAllByClient () : Promise<IMessage[]> {
+    const connections = await this.repository.find({ relations: ['client'] })
 
     return connections
   }
 
-  async create ({ adminId, clientId, text }: IMessageCreate) : Promise<IMessage> {
-    const message = await this.repository.create({ adminId, clientId, text })
+  async create (message: IMessageCreate) : Promise<IMessage> {
+    const ret = await this.repository.create(message)
 
-    await this.repository.save(message)
+    await this.repository.save(ret)
 
-    return message
+    return ret
   }
 }

@@ -21,11 +21,11 @@ export class MessageController {
     }
   }
 
-  async getAllByUser (req: Request, res: Response): Promise<Response> {
+  async getAllByClient (req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params
 
-      const messages = await this.useCase.getAllByUser(id)
+      const messages = await this.useCase.getAllByClient(id)
 
       return res.status(200).json(messages)
     } catch (err) {

@@ -18,19 +18,19 @@ document.querySelector('#start_chat').addEventListener('click', (event) => {
 
   const text = document.getElementById('txt_help').value
 
-  socket.on('connect', () => {
-    const params = {
-      email,
-      text
-    }
-    socket.emit('client_first_access', params, (call, err) => {
-      if (err) {
-        console.err(err)
-      } else {
-        console.log(call)
-      }
-    })
-  })
+  // socket.on('connect', () => {
+  //   const params = {
+  //     email,
+  //     text
+  //   }
+  //   socket.emit('client_first_access', params, (call, err) => {
+  //     if (err) {
+  //       console.err(err)
+  //     } else {
+  //       console.log(call)
+  //     }
+  //   })
+  // })
 
   socket.on('client_list_all_messages', (messages) => {
     const template_client = document.getElementById('message-user-template')
