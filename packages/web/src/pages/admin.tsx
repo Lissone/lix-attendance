@@ -1,6 +1,10 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { BiSend, BiExit } from 'react-icons/bi'
+
+import { useAuth } from '../hooks/useAuth'
+import { api } from '../services/api'
 
 import {
   Container,
@@ -13,6 +17,16 @@ import {
 } from '../styles/admin'
 
 export default function Admin() {
+  const { user } = useAuth()
+
+  useEffect(() => {
+
+  }, [])
+
+  function getConnectionsAlredyEstablished() {
+    const { data } = api.
+  }
+
   return (
     <>
       <Head>
@@ -24,7 +38,7 @@ export default function Admin() {
           <header>
             <div>
               <span>Bem vindo(a),</span>
-              <h1>Leonardo Dias Lissone</h1>
+              <h1>{user?.name}</h1>
             </div>
 
             <Link href="/">

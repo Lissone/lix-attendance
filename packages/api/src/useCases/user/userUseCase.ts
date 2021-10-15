@@ -21,22 +21,17 @@ export class UserUseCase implements IUserUseCase {
 
   async create (user: IUserCreate) : Promise<IUser> {
     try {
-      const userAlreadyExists = await this.repository.getOneByEmail(user.email)
-
-      if (userAlreadyExists) {
-        if (userAlreadyExists.socket !== user.socket) {
-          const userUpdated = await this.repository.update({
-            ...userAlreadyExists,
-            socket: user.socket
-          })
-
-          return userUpdated
-        } else {
-          return userAlreadyExists
-        }
-      }
-
       const ret = await this.repository.create(user)
+
+      return ret
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  async update (user: IUser) : Promise<IUser> {
+    try {
+      const ret = await this.repository.update(user)
 
       return ret
     } catch (err) {

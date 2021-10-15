@@ -19,19 +19,19 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
-  async getOneByUserId (userId: string) : Promise<IConnection | undefined> {
+  async getAllByAdminId (adminId: string) : Promise<IConnection[]> {
     try {
-      const connection = await this.repository.getOneByUserId(userId)
+      const connections = await this.repository.getAllByAdminId(adminId)
 
-      return connection
+      return connections
     } catch (err) {
       throw new Error(err)
     }
   }
 
-  async getOneByUserSocket (userSocket: string) : Promise<IConnection | undefined> {
+  async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
     try {
-      const connection = await this.repository.getOneByUserSocket(userSocket)
+      const connection = await this.repository.getOneByClientId(clientId)
 
       return connection
     } catch (err) {
@@ -51,7 +51,7 @@ export class ConnectionUseCase implements IConnectionUseCase {
 
   async updateAdminSocket (clientId: string, adminSocket: string) : Promise<IConnection> {
     try {
-      const connection = await this.repository.getOneByUserId(clientId)
+      const connection = await this.repository.getOneByClientId(clientId)
 
       const connectionWithNewAdminSocket = {
         adminSocket,

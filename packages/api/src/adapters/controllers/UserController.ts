@@ -1,21 +1,51 @@
 import { Request, Response } from 'express'
 
 import { IUserUseCase } from '@useCases/user/IUserUseCase'
+import { IConnectionUseCase } from '@useCases/connection/IConnectionUseCase'
 
 export class UserController {
-  useCase: IUserUseCase
+  useCaseUser: IUserUseCase
+  useCaseConnection: IConnectionUseCase
 
-  constructor (useCase: IUserUseCase) {
-    this.useCase = useCase
+  constructor (useCaseUser: IUserUseCase, useCaseConnection: IConnectionUseCase) {
+    this.useCaseUser = useCaseUser
+    this.useCaseConnection = useCaseConnection
   }
 
   async signIn (req: Request, res: Response): Promise<Response> {
     try {
       const { user } = req.body
 
-      const ret = await this.useCase.create(user)
+      const userAlreadyExists = await this.useCaseUser.getOneByEmail(user.email)
 
-      return res.status(200).json({ user: ret })
+      if (!userAlreadyExists) {
+        const ret = await this.useCaseUser.create(user)
+
+        if (user.type === 'client') {
+          await this.useCaseConnection.create({
+            clientId: ret.id
+          })
+        }
+
+        return res.status(200).json({ user: ret })
+      }
+
+      const userUpdated = await this.useCaseUser.update({
+        ...userAlreadyExists,
+        socket: user.socket
+      })
+
+      if (user.type === 'client') {
+        const connection = await this.useCaseConnection.getOneByClientId(userUpdated.id)
+
+        if (!connection) {
+          await this.useCaseConnection.create({
+            clientId: userUpdated.id
+          })
+        }
+      }
+
+      return res.status(200).json({ user: userUpdated })
     } catch (err) {
       return res.status(500).json({ message: err.message })
     }

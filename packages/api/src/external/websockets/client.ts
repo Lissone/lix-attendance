@@ -3,11 +3,11 @@ import { Socket } from 'socket.io'
 import { io } from '../app'
 
 // import { ConnectionRepository } from '@repositories/connectionRepository'
-import { MessageRepository } from '@repositories/messageRepository'
+// import { MessageRepository } from '@repositories/MessageRepository'
 // import { UserRepository } from '@repositories/userRepository'
 
 // import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
-import { MessageUseCase } from '@useCases/message/messageUseCase'
+// import { MessageUseCase } from '@useCases/message/messageUseCase'
 // import { UserUseCase } from '@useCases/user/userUseCase'
 
 // interface IParams {
@@ -17,46 +17,46 @@ import { MessageUseCase } from '@useCases/message/messageUseCase'
 
 io.on('connect', (socket: Socket) => {
   // const connectionRepository = new ConnectionRepository()
-  const messageRepository = new MessageRepository()
+  // const messageRepository = new MessageRepository()
   // const userRepository = new UserRepository()
 
   // const connectionUseCase = new ConnectionUseCase(connectionRepository)
-  const messageUseCase = new MessageUseCase(messageRepository)
+  // const messageUseCase = new MessageUseCase(messageRepository)
   // const userUseCase = new UserUseCase(userRepository)
 
   // const userSocket = socket.id
 
   //   socket.on('client_first_access', async ({ text, email }: IParams) => {
-  //     console.log('chegou')
-  //     let userId = null
+  // console.log('chegou')
+  // let userId = null
 
-  //     const userAlreadyExists = await userUseCase.getOneByEmail(email)
+  // const userAlreadyExists = await userUseCase.getOneByEmail(email)
 
-  //     if (!userAlreadyExists) {
-  //       const user = await userUseCase.create(email)
+  // if (!userAlreadyExists) {
+  //   const user = await userUseCase.create(email)
 
-  //       await connectionUseCase.create({
-  //         userSocket,
-  //         userId: user.id
-  //       })
+  //   await connectionUseCase.create({
+  //     userSocket,
+  //     userId: user.id
+  //   })
 
-  //       userId = user.id
-  //     } else {
-  //       userId = userAlreadyExists.id
+  //   userId = user.id
+  // } else {
+  //   userId = userAlreadyExists.id
 
-  //       const connection = await connectionUseCase.getOneByUserId(userAlreadyExists.id)
+  //   const connection = await connectionUseCase.getOneByUserId(userAlreadyExists.id)
 
-  //       if (!connection) {
-  //         await connectionUseCase.create({
-  //           userSocket,
-  //           userId: userAlreadyExists.id
-  //         })
-  //       } else {
-  //         connection.userSocket = userSocket
+  //   if (!connection) {
+  //     await connectionUseCase.create({
+  //       userSocket,
+  //       userId: userAlreadyExists.id
+  //     })
+  //   } else {
+  //     connection.userSocket = userSocket
 
-  //         await connectionUseCase.create(connection)
-  //       }
-  //     }
+  //     await connectionUseCase.create(connection)
+  //   }
+  // }
 
   //     await messageUseCase.create({ userId, text })
 
@@ -69,12 +69,12 @@ io.on('connect', (socket: Socket) => {
   //     io.emit('admin_list_all_users', allUsers)
   //   })
 
-  socket.on('client_send_to_admin', async ({ clientId, adminId, text }) => {
-    const message = await messageUseCase.create({ clientId, text })
+  // socket.on('client_send_to_admin', async ({ clientId, adminId, text }) => {
+  //   const message = await messageUseCase.create({ clientId, text })
 
-    io.to(adminId).emit('admin_receive_message', {
-      message,
-      socket_id: socket.id
-    })
-  })
+  //   io.to(adminId).emit('admin_receive_message', {
+  //     message,
+  //     socket_id: socket.id
+  //   })
+  // })
 })

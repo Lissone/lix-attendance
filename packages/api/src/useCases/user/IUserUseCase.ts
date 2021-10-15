@@ -9,6 +9,7 @@ interface IUserCreate {
 interface IUserUseCase {
   getOneByEmail (email: string) : Promise<IUser>
   create(user: IUserCreate) : Promise<IUser>
+  update(user: IUser) : Promise<IUser>
 }
 
 export { IUserUseCase, IUserCreate }

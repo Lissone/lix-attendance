@@ -10,7 +10,7 @@ export class MessageRepository implements IMessageRepository {
   }
 
   async getAllByClient () : Promise<IMessage[]> {
-    const connections = await this.repository.find({ relations: ['client'] })
+    const connections = await this.repository.find({ relations: ['client', 'admin'] })
 
     return connections
   }

@@ -10,30 +10,28 @@ export class ConnectionRepository implements IConnectionRepository {
   }
 
   async getAllWithoutAdmin () : Promise<IConnection[]> {
-    const connections = await this.repository.find({ where: { adminSocket: null }, relations: ['user'] })
+    const connections = await this.repository.find({ where: { adminSocket: null }, relations: ['client'] })
 
     return connections
   }
 
-  async getOneByUserId (clientId: string) : Promise<IConnection | undefined> {
+  async getAllByAdminId (adminId: string) : Promise<IConnection[]> {
+    const connections = await this.repository.find({ where: { adminId: adminId }, relations: ['client', 'admin'] })
+
+    return connections
+  }
+
+  async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
     const connection = await this.repository.findOne({ clientId })
 
     return connection
   }
 
-  async getOneByUserSocket (clientSocket: string) : Promise<IConnection | undefined> {
-    const connection = await this.repository.findOne({ clientSocket })
-
-    return connection
-  }
-
-  async create ({ id, adminId, adminSocket, clientId, clientSocket }: IConnectionCreate) : Promise<IConnection> {
+  async create ({ id, adminId, clientId }: IConnectionCreate) : Promise<IConnection> {
     const connection = this.repository.create({
       id,
       adminId,
-      adminSocket,
-      clientId,
-      clientSocket
+      clientId
     })
 
     await this.repository.save(connection)
