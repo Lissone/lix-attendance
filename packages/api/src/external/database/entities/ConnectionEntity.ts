@@ -35,6 +35,11 @@ const ConnectionEntity = new EntitySchema<IConnection>({
     }
   },
   relations: {
+    messages: {
+      type: 'one-to-many',
+      target: 'message',
+      inverseSide: 'connection'
+    },
     admin: {
       type: 'many-to-one',
       joinColumn: ({

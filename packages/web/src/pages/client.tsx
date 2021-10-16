@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import ptBR from 'date-fns/locale/pt-BR'
 import { format, parseISO } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
 import { BiSend, BiExit } from 'react-icons/bi'
 
 import { useAuth } from '../hooks/useAuth'
@@ -39,14 +39,9 @@ export default function Client({ socket }: any) {
   }, [])
 
   async function getAllMessages() {
-    const { data } = await api.get(`/messages/${user.id}`, {
-      params: {
-        _sort: 'createdAt',
-        _order: 'asc'
-      }
-    })
+    const { data } = await api.get(`/connections/${user.connectionId}`)
 
-    const messagesFormated = data.map(message => ({
+    const messagesFormated = data.messages.map(message => ({
       id: message.id,
       adminId: message.adminId,
       clientId: message.clientId,
@@ -62,6 +57,7 @@ export default function Client({ socket }: any) {
   function handleSendMessage() {
     try {
       const params = {
+        connectionId: user.connectionId,
         clientId: user.id,
         adminId: messages[0]?.adminId,
         text

@@ -39,6 +39,16 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
+  async getOne (connectionId: string) : Promise<IConnection | undefined> {
+    try {
+      const connection = await this.repository.getOne(connectionId)
+
+      return connection
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
   async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
     try {
       const connection = await this.repository.getOneByClientId(clientId)

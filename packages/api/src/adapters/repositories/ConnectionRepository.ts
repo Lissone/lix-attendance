@@ -27,6 +27,12 @@ export class ConnectionRepository implements IConnectionRepository {
     return connections
   }
 
+  async getOne (connectionId: string) : Promise<IConnection | undefined> {
+    const connection = await this.repository.findOne({ where: { id: connectionId }, relations: ['client', 'admin', 'messages'] })
+
+    return connection
+  }
+
   async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
     const connection = await this.repository.findOne({ clientId })
 

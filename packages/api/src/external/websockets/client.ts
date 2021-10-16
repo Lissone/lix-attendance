@@ -3,11 +3,11 @@ import { Socket } from 'socket.io'
 import { io } from '../app'
 
 // import { ConnectionRepository } from '@repositories/connectionRepository'
-// import { MessageRepository } from '@repositories/MessageRepository'
+import { MessageRepository } from '@repositories/MessageRepository'
 // import { UserRepository } from '@repositories/userRepository'
 
 // import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
-// import { MessageUseCase } from '@useCases/message/messageUseCase'
+import { MessageUseCase } from '@useCases/message/messageUseCase'
 // import { UserUseCase } from '@useCases/user/userUseCase'
 
 // interface IParams {
@@ -17,11 +17,11 @@ import { io } from '../app'
 
 io.on('connect', (socket: Socket) => {
   // const connectionRepository = new ConnectionRepository()
-  // const messageRepository = new MessageRepository()
+  const messageRepository = new MessageRepository()
   // const userRepository = new UserRepository()
 
   // const connectionUseCase = new ConnectionUseCase(connectionRepository)
-  // const messageUseCase = new MessageUseCase(messageRepository)
+  const messageUseCase = new MessageUseCase(messageRepository)
   // const userUseCase = new UserUseCase(userRepository)
 
   // const userSocket = socket.id
@@ -69,12 +69,12 @@ io.on('connect', (socket: Socket) => {
   //     io.emit('admin_list_all_users', allUsers)
   //   })
 
-  // socket.on('client_send_to_admin', async ({ clientId, adminId, text }) => {
-  //   const message = await messageUseCase.create({ clientId, text })
+  socket.on('client_send_to_admin', async ({ connectionId, clientId, adminId, text }) => {
+    const message = await messageUseCase.create({ connectionId, clientId, text })
 
-  //   io.to(adminId).emit('admin_receive_message', {
-  //     message,
-  //     socket_id: socket.id
-  //   })
-  // })
+    io.to(adminId).emit('admin_receive_message', {
+      message,
+      socket_id: socket.id
+    })
+  })
 })

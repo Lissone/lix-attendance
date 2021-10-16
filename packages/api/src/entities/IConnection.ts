@@ -1,3 +1,4 @@
+import { IMessage } from './IMessage'
 import { IUser } from './IUser'
 
 interface IConnection {
@@ -7,6 +8,7 @@ interface IConnection {
   closedAt: Date | null
   createdAt: Date
   updatedAt: Date
+  messages: IMessage[]
   admin?: IUser
   client: IUser
 }

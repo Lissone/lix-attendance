@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { format, parseISO } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
 import { BiSend, BiExit } from 'react-icons/bi'
 
 import { useAuth } from '../hooks/useAuth'
@@ -28,19 +30,61 @@ interface Connection {
   }
 }
 
+interface Message {
+  id?: string
+  adminId: string
+  clientId: string
+  text: string
+  createdHour?: string
+  admin?: {
+    name: string
+  }
+}
+
 export default function Admin() {
   const { user } = useAuth()
 
+  const [load, setLoad] = useState(false)
   const [connections, setConnections] = useState([] as Connection[])
+  const [connectionSelected, setConnectionSelected] = useState<Connection>(null)
+  const [messages, setMessages] = useState([] as Message[])
 
   useEffect(() => {
-    getAllConnectionsUnclosedByAdminId()
-  }, [])
+    if (!load) {
+      getAllConnectionsUnclosedByAdminId()
+
+      setLoad(true)
+    }
+
+    if (connectionSelected) {
+      getAllMessages()
+
+      console.log(messages)
+    }
+  }, [connectionSelected])
 
   async function getAllConnectionsUnclosedByAdminId() {
-    const { data } = await api.get(`/connections/${user.id}`)
+    const { data } = await api.post('/connections', {
+      adminId: user.id
+    })
 
     setConnections(data)
+  }
+
+  async function getAllMessages() {
+    const { data } = await api.get(`/connections/${user.connectionId}`)
+
+    const messagesFormated = data.messages.map(message => ({
+      id: message.id,
+      adminId: message.adminId,
+      clientId: message.clientId,
+      text: message.text,
+      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+        locale: ptBR
+      })
+    }))
+
+    setMessages(messagesFormated)
   }
 
   return (
@@ -72,7 +116,12 @@ export default function Admin() {
                 </div>
 
                 {connection.adminId !== null ? (
-                  <button type="button">Conversar</button>
+                  <button
+                    type="button"
+                    onClick={() => setConnectionSelected(connection)}
+                  >
+                    Conversar
+                  </button>
                 ) : (
                   <button type="button">Travar</button>
                 )}

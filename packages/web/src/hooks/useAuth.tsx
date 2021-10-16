@@ -9,6 +9,7 @@ interface User {
   name: string
   email: string
   socket: string
+  connectionId?: string
   createdAt?: Date
 }
 
@@ -34,7 +35,8 @@ export function AuthProvider({ children }: AuthContextProviderProps) {
 
       setUser({
         ...newUser,
-        ...data.user
+        ...data.user,
+        connectionId: data.connectionId
       })
 
       if (newUser.type === 'client') {

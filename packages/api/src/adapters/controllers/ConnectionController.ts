@@ -11,7 +11,7 @@ export class ConnectionController {
 
   async getAllUnclosedByAdminId (req: Request, res: Response): Promise<Response> {
     try {
-      const { adminId } = req.params
+      const { adminId } = req.body
 
       if (!adminId) {
         return res.sendStatus(400)
@@ -20,6 +20,22 @@ export class ConnectionController {
       const connections = await this.useCase.getAllUnclosedByAdminId(adminId)
 
       return res.status(200).json(connections)
+    } catch (err) {
+      return res.status(500).json({ message: err.message })
+    }
+  }
+
+  async getOne (req: Request, res: Response): Promise<Response> {
+    try {
+      const { connectionId } = req.params
+
+      if (!connectionId) {
+        return res.sendStatus(400)
+      }
+
+      const connection = await this.useCase.getOne(connectionId)
+
+      return res.status(200).json(connection)
     } catch (err) {
       return res.status(500).json({ message: err.message })
     }
