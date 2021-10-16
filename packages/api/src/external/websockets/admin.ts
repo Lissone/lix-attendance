@@ -23,7 +23,9 @@ io.on('connect', async (socket: Socket) => {
     const allConnections = [
       ...connectionsWithoutAdmin,
       ...connectionsUnclosed
-    ]
+    ].sort(function (a, b) {
+      return b.createdAt.getTime() - a.createdAt.getTime()
+    })
 
     callback(allConnections)
   })
