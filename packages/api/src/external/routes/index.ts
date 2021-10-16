@@ -27,7 +27,6 @@ const messageUseCase = new MessageUseCase(messageRepository)
 const messageController = new MessageController(messageUseCase)
 
 apiRoutes.get('/api/v1/connections/:connectionId', (req, res) => connectionController.getOne(req, res))
-apiRoutes.post('/api/v1/connections', (req, res) => connectionController.getAllUnclosedByAdminId(req, res))
 
 apiRoutes.post('/api/v1/users', (req, res) => userController.signIn(req, res))
 

@@ -37,7 +37,7 @@ function call (id) {
     user_id: connection.user_id
   }
 
-  socket.emit('admin_user_in_support', params)
+  socket.emit('admin_in_support', params)
 
   socket.emit('admin_list_messages_by_user', params, (messages) => { // envia parâmetro na requisição e já recebe o retorno
     const divMessages = document.getElementById(

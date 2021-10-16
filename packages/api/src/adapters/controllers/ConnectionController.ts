@@ -9,22 +9,6 @@ export class ConnectionController {
     this.useCase = useCase
   }
 
-  async getAllUnclosedByAdminId (req: Request, res: Response): Promise<Response> {
-    try {
-      const { adminId } = req.body
-
-      if (!adminId) {
-        return res.sendStatus(400)
-      }
-
-      const connections = await this.useCase.getAllUnclosedByAdminId(adminId)
-
-      return res.status(200).json(connections)
-    } catch (err) {
-      return res.status(500).json({ message: err.message })
-    }
-  }
-
   async getOne (req: Request, res: Response): Promise<Response> {
     try {
       const { connectionId } = req.params

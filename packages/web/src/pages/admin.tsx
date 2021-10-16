@@ -12,6 +12,7 @@ import {
   Container,
   SidebarChat,
   ClientContact,
+  ButtonContact,
   ChatContainer,
   ChatContent,
   AdminMessage,
@@ -41,7 +42,7 @@ interface Message {
   }
 }
 
-export default function Admin() {
+export default function Admin({ socket }: any) {
   const { user } = useAuth()
 
   const [load, setLoad] = useState(false)
@@ -49,9 +50,15 @@ export default function Admin() {
   const [connectionSelected, setConnectionSelected] = useState<Connection>(null)
   const [messages, setMessages] = useState([] as Message[])
 
+  socket.on('admin_list_clients_without_admin', connectionsWithoutClient => {
+    console.log(connectionsWithoutClient)
+
+    setConnections([...connections, ...connectionsWithoutClient])
+  })
+
   useEffect(() => {
     if (!load) {
-      getAllConnectionsUnclosedByAdminId()
+      getAllConnections()
 
       setLoad(true)
     }
@@ -63,12 +70,14 @@ export default function Admin() {
     }
   }, [connectionSelected])
 
-  async function getAllConnectionsUnclosedByAdminId() {
-    const { data } = await api.post('/connections', {
-      adminId: user.id
-    })
-
-    setConnections(data)
+  function getAllConnections() {
+    socket.emit(
+      'admin_list_all_clients',
+      { adminId: user.id },
+      allConnections => {
+        setConnections([...connections, ...allConnections])
+      }
+    )
   }
 
   async function getAllMessages() {
@@ -85,6 +94,15 @@ export default function Admin() {
     }))
 
     setMessages(messagesFormated)
+  }
+
+  async function handleConnectWithUser(clientId: string) {
+    const params = {
+      clientId,
+      adminId: user.id
+    }
+
+    socket.emit('admin_in_support', params)
   }
 
   return (
@@ -116,14 +134,21 @@ export default function Admin() {
                 </div>
 
                 {connection.adminId !== null ? (
-                  <button
+                  <ButtonContact
                     type="button"
+                    backgroundColor="green"
                     onClick={() => setConnectionSelected(connection)}
                   >
                     Conversar
-                  </button>
+                  </ButtonContact>
                 ) : (
-                  <button type="button">Travar</button>
+                  <ButtonContact
+                    type="button"
+                    backgroundColor="blue"
+                    onClick={() => handleConnectWithUser(connection.clientId)}
+                  >
+                    Conectar
+                  </ButtonContact>
                 )}
               </ClientContact>
             ))}

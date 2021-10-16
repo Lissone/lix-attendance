@@ -14,7 +14,7 @@ interface IConnectionRepository {
   getOneByClientId(clientId: string) : Promise<IConnection | undefined>
   // getOneByClientSocket(clientSocket: string) : Promise<IConnection | undefined>
   create(connection: IConnectionCreate) : Promise<IConnection>
-  updateAdminSocket(connection: IConnection) : Promise<IConnection>
+  update(connection: IConnection) : Promise<IConnection>
 }
 
 export { IConnectionRepository, IConnectionCreate }

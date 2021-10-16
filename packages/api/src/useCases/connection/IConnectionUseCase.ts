@@ -9,7 +9,7 @@ interface IConnectionUseCase {
   getOneByClientId(clientId: string) : Promise<IConnection | undefined>
   // getOneByClientSocket(clientSocket: string) : Promise<IConnection | undefined>
   create(connection: IConnectionCreate) : Promise<IConnection>
-  updateAdminSocket(userId: string, adminSocket: string) : Promise<IConnection>
+  updateWithAdmin(clientId: string, adminId: string) : Promise<IConnection>
 }
 
 export { IConnectionUseCase }

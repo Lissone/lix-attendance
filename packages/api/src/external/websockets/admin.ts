@@ -2,22 +2,31 @@ import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
-// import { ConnectionRepository } from '@repositories/ConnectionRepository'
+import { ConnectionRepository } from '@repositories/ConnectionRepository'
 // import { MessageRepository } from '@repositories/messageRepository'
 
-// import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
+import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
 // import { MessageUseCase } from '@useCases/message/messageUseCase'
 
 io.on('connect', async (socket: Socket) => {
-  // const connectionRepository = new ConnectionRepository()
+  const connectionRepository = new ConnectionRepository()
   // // const messageRepository = new MessageRepository()
 
-  // const connectionUseCase = new ConnectionUseCase(connectionRepository)
+  const connectionUseCase = new ConnectionUseCase(connectionRepository)
   // // const messageUseCase = new MessageUseCase(messageRepository)
 
-  // const allConnectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
+  socket.on('admin_list_all_clients', async ({ adminId }, callback) => {
+    const connectionsUnclosed = await connectionUseCase.getAllUnclosedByAdminId(adminId)
 
-  // io.emit('admin_list_all_users', allConnectionsWithoutAdmin) // para todos os sockets
+    const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
+
+    const allConnections = [
+      ...connectionsWithoutAdmin,
+      ...connectionsUnclosed
+    ]
+
+    callback(allConnections)
+  })
 
   // socket.on('admin_list_messages_by_user', async ({ userId }, callback) => { // recebe parâmetros e função callback para devolver resposta
   //   const allMessages = await messageUseCase.getAllByUser(userId)
@@ -40,11 +49,15 @@ io.on('connect', async (socket: Socket) => {
   //   })
   // })
 
-  // socket.on('admin_user_in_support', async ({ userId }) => {
-  //   await connectionUseCase.updateAdminSocket(userId, socket.id)
+  socket.on('admin_in_support', async ({ clientId, adminId }) => {
+    console.log(clientId, adminId)
 
-  //   const allConnectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
+    await connectionUseCase.updateWithAdmin(clientId, adminId)
 
-  //   io.emit('admin_list_all_users', allConnectionsWithoutAdmin) // para todos os sockets
-  // })
+    const allConnectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
+
+    console.log(allConnectionsWithoutAdmin)
+
+    io.emit('admin_list_clients_without_admin', allConnectionsWithoutAdmin) // for all sockets
+  })
 })

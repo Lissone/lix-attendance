@@ -47,7 +47,7 @@ export class ConnectionRepository implements IConnectionRepository {
     return ret
   }
 
-  async updateAdminSocket (connection: IConnection) : Promise<IConnection> {
+  async update (connection: IConnection) : Promise<IConnection> {
     const ret = await this.repository.save(connection)
 
     return ret
