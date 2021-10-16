@@ -4,6 +4,7 @@ interface IConnection {
   id: string
   adminId?: string
   clientId: string
+  closedAt: Date | null
   createdAt: Date
   updatedAt: Date
   admin?: IUser

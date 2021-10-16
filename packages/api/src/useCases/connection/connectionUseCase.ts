@@ -29,6 +29,16 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
+  async getAllUnclosedByAdminId (adminId: string) : Promise<IConnection[]> {
+    try {
+      const connections = await this.repository.getAllUnclosedByAdminId(adminId)
+
+      return connections
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
   async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
     try {
       const connection = await this.repository.getOneByClientId(clientId)

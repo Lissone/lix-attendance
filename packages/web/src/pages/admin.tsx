@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BiSend, BiExit } from 'react-icons/bi'
 
 import { useAuth } from '../hooks/useAuth'
@@ -16,15 +16,31 @@ import {
   ClientMessage
 } from '../styles/admin'
 
+interface Connection {
+  id: string
+  adminId: string | null
+  clientId: string
+  closedAt: Date | null
+  client: {
+    name: string
+    email: string
+    socket: string
+  }
+}
+
 export default function Admin() {
   const { user } = useAuth()
 
-  useEffect(() => {
+  const [connections, setConnections] = useState([] as Connection[])
 
+  useEffect(() => {
+    getAllConnectionsUnclosedByAdminId()
   }, [])
 
-  function getConnectionsAlredyEstablished() {
-    const { data } = api.
+  async function getAllConnectionsUnclosedByAdminId() {
+    const { data } = await api.get(`/connections/${user.id}`)
+
+    setConnections(data)
   }
 
   return (
@@ -47,25 +63,21 @@ export default function Admin() {
           </header>
 
           <div>
-            <ClientContact>
-              <div>
-                <h4>Rodrigo Lissone</h4>
+            {connections.map(connection => (
+              <ClientContact key={connection.id}>
+                <div>
+                  <h4>{connection.client.name}</h4>
 
-                <p>rodrigolissone@gmail.com</p>
-              </div>
+                  <p>{connection.client.email}</p>
+                </div>
 
-              <button type="button">Conversar</button>
-            </ClientContact>
-
-            <ClientContact>
-              <div>
-                <h4>Fernanda Mendonça</h4>
-
-                <p>fernanda@gmail.com</p>
-              </div>
-
-              <button type="button">Conversar</button>
-            </ClientContact>
+                {connection.adminId !== null ? (
+                  <button type="button">Conversar</button>
+                ) : (
+                  <button type="button">Travar</button>
+                )}
+              </ClientContact>
+            ))}
           </div>
         </SidebarChat>
 

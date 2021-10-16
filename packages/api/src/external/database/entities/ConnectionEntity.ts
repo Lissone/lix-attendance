@@ -18,6 +18,11 @@ const ConnectionEntity = new EntitySchema<IConnection>({
       type: String,
       nullable: false
     },
+    closedAt: {
+      name: 'closedAt',
+      type: 'datetime2',
+      nullable: true
+    },
     createdAt: {
       name: 'createdAt',
       type: 'datetime2',
