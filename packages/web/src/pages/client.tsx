@@ -94,6 +94,7 @@ export default function Client({ socket }: any) {
 
       const message = {
         ...params,
+        adminId: null,
         createdHour: format(new Date(), 'HH:mm', {
           locale: ptBR
         })

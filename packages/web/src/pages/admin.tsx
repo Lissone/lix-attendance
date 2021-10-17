@@ -40,9 +40,6 @@ interface Message {
   clientId: string
   text: string
   createdHour?: string
-  admin?: {
-    name: string
-  }
 }
 
 export default function Admin({ socket }: any) {
@@ -54,7 +51,6 @@ export default function Admin({ socket }: any) {
     [] as Connection[]
   )
   const [connectionSelected, setConnectionSelected] = useState<Connection>(null)
-  const [messages, setMessages] = useState([] as Message[])
   const [text, setText] = useState('')
 
   useEffect(() => {
@@ -62,10 +58,6 @@ export default function Admin({ socket }: any) {
       getAllConnections()
 
       setLoad(true)
-    }
-
-    if (connectionSelected) {
-      getAllMessages()
     }
   }, [connectionSelected])
 
@@ -82,8 +74,34 @@ export default function Admin({ socket }: any) {
       setConnections(allConnections)
     })
 
-    return () => socket.off('admin_list_clients_without_admin')
-  }, [connections, connectionsUnclosed])
+    socket.on('admin_receive_message', ({ clientId, message }) => {
+      console.log(connectionSelected)
+
+      if (connectionSelected.clientId === clientId) {
+        const messageFormatted = {
+          id: message.id,
+          adminId: message.adminId,
+          clientId: message.clientId,
+          text: message.text,
+          createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+            locale: ptBR
+          })
+        }
+
+        const newMessages = [...connectionSelected.messages, messageFormatted]
+
+        setConnectionSelected({
+          ...connectionSelected,
+          messages: newMessages
+        })
+      }
+    })
+
+    return () => {
+      socket.off('admin_list_clients_without_admin')
+      socket.off('admin_receive_message')
+    }
+  }, [connections, connectionsUnclosed, connectionSelected])
 
   function getAllConnections() {
     socket.emit(
@@ -104,10 +122,8 @@ export default function Admin({ socket }: any) {
     )
   }
 
-  async function getAllMessages() {
-    try {
-      const { data } = await api.get(`/connections/${connectionSelected.id}`)
-
+  function handleSelectConnection(connectionId: string) {
+    api.get(`/connections/${connectionId}`).then(({ data }) => {
       const messagesFormated = data.messages.map(message => ({
         id: message.id,
         adminId: message.adminId,
@@ -118,24 +134,38 @@ export default function Admin({ socket }: any) {
         })
       }))
 
-      console.log(messagesFormated)
-
-      setMessages(messagesFormated)
-    } catch (err) {
-      console.log(err)
-    }
+      setConnectionSelected({
+        ...data,
+        messages: messagesFormated
+      })
+    })
   }
 
-  function handleConnectWithClient(connection: Connection) {
+  async function handleConnectWithClient(connectionId: string) {
+    const { data } = await api.get(`/connections/${connectionId}`)
+
+    const messagesFormated = data.messages.map(message => ({
+      id: message.id,
+      adminId: message.adminId,
+      clientId: message.clientId,
+      text: message.text,
+      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+        locale: ptBR
+      })
+    }))
+
     const params = {
-      clientId: connection.clientId,
+      clientId: data.clientId,
       adminId: user.id
     }
 
     socket.emit('admin_in_support', params, newConnectionsUnclosed => {
       setConnectionsUnclosed(newConnectionsUnclosed)
 
-      setConnectionSelected(connection)
+      setConnectionSelected({
+        ...data,
+        messages: messagesFormated
+      })
     })
   }
 
@@ -157,7 +187,13 @@ export default function Admin({ socket }: any) {
         })
       }
 
-      setMessages([...messages, message])
+      const newMessages = [...connectionSelected.messages, message]
+
+      setConnectionSelected({
+        ...connectionSelected,
+        messages: newMessages
+      })
+
       setText('')
     } catch (err) {
       console.error(err)
@@ -196,7 +232,7 @@ export default function Admin({ socket }: any) {
                   <ButtonContact
                     type="button"
                     backgroundColor="green"
-                    onClick={() => setConnectionSelected(connection)}
+                    onClick={() => handleSelectConnection(connection.id)}
                   >
                     Conversar
                   </ButtonContact>
@@ -204,7 +240,7 @@ export default function Admin({ socket }: any) {
                   <ButtonContact
                     type="button"
                     backgroundColor="blue"
-                    onClick={() => handleConnectWithClient(connection)}
+                    onClick={() => handleConnectWithClient(connection.id)}
                   >
                     Conectar
                   </ButtonContact>
@@ -225,7 +261,7 @@ export default function Admin({ socket }: any) {
             </header>
 
             <ChatContent>
-              {messages.map(message =>
+              {connectionSelected.messages.map(message =>
                 message.adminId === null || message.adminId === undefined ? (
                   <ClientMessage key={message.id}>
                     <div>
