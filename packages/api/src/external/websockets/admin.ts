@@ -1,3 +1,4 @@
+/* eslint-disable node/no-callback-literal */
 import { Socket } from 'socket.io'
 
 import { io } from '../app'
@@ -20,14 +21,7 @@ io.on('connect', async (socket: Socket) => {
 
     const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
 
-    const allConnections = [
-      ...connectionsWithoutAdmin,
-      ...connectionsUnclosed
-    ].sort(function (a, b) {
-      return b.createdAt.getTime() - a.createdAt.getTime()
-    })
-
-    callback(allConnections)
+    callback({ connectionsUnclosed, connectionsWithoutAdmin })
   })
 
   // socket.on('admin_list_messages_by_user', async ({ userId }, callback) => { // recebe parâmetros e função callback para devolver resposta
@@ -52,14 +46,12 @@ io.on('connect', async (socket: Socket) => {
   // })
 
   socket.on('admin_in_support', async ({ clientId, adminId }) => {
-    console.log(clientId, adminId)
-
     await connectionUseCase.updateWithAdmin(clientId, adminId)
 
-    const allConnectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
+    const connectionsUnclosed = await connectionUseCase.getAllUnclosedByAdminId(adminId)
 
-    console.log(allConnectionsWithoutAdmin)
+    const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
 
-    io.emit('admin_list_clients_without_admin', allConnectionsWithoutAdmin) // for all sockets
+    io.emit('admin_list_clients_without_admin', { connectionsUnclosed, connectionsWithoutAdmin }) // for all sockets
   })
 })

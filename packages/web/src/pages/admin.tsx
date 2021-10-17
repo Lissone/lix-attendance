@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, getTime } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import { BiSend, BiExit } from 'react-icons/bi'
 
@@ -47,14 +48,11 @@ export default function Admin({ socket }: any) {
 
   const [load, setLoad] = useState(false)
   const [connections, setConnections] = useState([] as Connection[])
+  const [connectionsUnclosed, setConnectionsUnclosed] = useState(
+    [] as Connection[]
+  )
   const [connectionSelected, setConnectionSelected] = useState<Connection>(null)
   const [messages, setMessages] = useState([] as Message[])
-
-  socket.on('admin_list_clients_without_admin', connectionsWithoutClient => {
-    console.log(connectionsWithoutClient)
-
-    setConnections([...connections, ...connectionsWithoutClient])
-  })
 
   useEffect(() => {
     if (!load) {
@@ -65,42 +63,74 @@ export default function Admin({ socket }: any) {
 
     if (connectionSelected) {
       getAllMessages()
-
-      console.log(messages)
     }
   }, [connectionSelected])
+
+  useEffect(() => {
+    socket.on('admin_list_clients_without_admin', newConnections => {
+      const allConnections = [
+        ...newConnections.connectionsWithoutAdmin,
+        ...newConnections.connectionsUnclosed
+      ].sort(
+        (a, b) =>
+          getTime(new Date(b.createdAt)) - getTime(new Date(a.createdAt))
+      )
+
+      setConnectionsUnclosed(connectionsUnclosed)
+      setConnections(allConnections)
+    })
+
+    return () => socket.off('admin_list_clients_without_admin')
+  }, [connections])
 
   function getAllConnections() {
     socket.emit(
       'admin_list_all_clients',
       { adminId: user.id },
-      allConnections => {
-        setConnections([...connections, ...allConnections])
+      newConnections => {
+        const allConnections = [
+          ...newConnections.connectionsWithoutAdmin,
+          ...newConnections.connectionsUnclosed
+        ].sort(
+          (a, b) =>
+            getTime(new Date(b.createdAt)) - getTime(new Date(a.createdAt))
+        )
+
+        setConnectionsUnclosed(connectionsUnclosed)
+        setConnections(allConnections)
       }
     )
   }
 
   async function getAllMessages() {
-    const { data } = await api.get(`/connections/${user.connectionId}`)
+    try {
+      const { data } = await api.get(`/connections/${connectionSelected.id}`)
 
-    const messagesFormated = data.messages.map(message => ({
-      id: message.id,
-      adminId: message.adminId,
-      clientId: message.clientId,
-      text: message.text,
-      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
-        locale: ptBR
-      })
-    }))
+      const messagesFormated = data.messages.map(message => ({
+        id: message.id,
+        adminId: message.adminId,
+        clientId: message.clientId,
+        text: message.text,
+        createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+          locale: ptBR
+        })
+      }))
 
-    setMessages(messagesFormated)
+      console.log(messagesFormated)
+
+      setMessages(messagesFormated)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
-  async function handleConnectWithUser(clientId: string) {
+  function handleConnectWithClient(connection: Connection) {
     const params = {
-      clientId,
+      clientId: connection.clientId,
       adminId: user.id
     }
+
+    setConnectionSelected(connection)
 
     socket.emit('admin_in_support', params)
   }
@@ -145,7 +175,7 @@ export default function Admin({ socket }: any) {
                   <ButtonContact
                     type="button"
                     backgroundColor="blue"
-                    onClick={() => handleConnectWithUser(connection.clientId)}
+                    onClick={() => handleConnectWithClient(connection)}
                   >
                     Conectar
                   </ButtonContact>
