@@ -67,21 +67,20 @@ export default function Admin({ socket }: any) {
   }, [connectionSelected])
 
   useEffect(() => {
-    socket.on('admin_list_clients_without_admin', newConnections => {
+    socket.on('admin_list_clients_without_admin', connectionsWithoutAdmin => {
       const allConnections = [
-        ...newConnections.connectionsWithoutAdmin,
-        ...newConnections.connectionsUnclosed
+        ...connectionsWithoutAdmin,
+        ...connectionsUnclosed
       ].sort(
         (a, b) =>
           getTime(new Date(b.createdAt)) - getTime(new Date(a.createdAt))
       )
 
-      setConnectionsUnclosed(connectionsUnclosed)
       setConnections(allConnections)
     })
 
     return () => socket.off('admin_list_clients_without_admin')
-  }, [connections])
+  }, [connections, connectionsUnclosed])
 
   function getAllConnections() {
     socket.emit(
@@ -130,9 +129,11 @@ export default function Admin({ socket }: any) {
       adminId: user.id
     }
 
-    setConnectionSelected(connection)
+    socket.emit('admin_in_support', params, newConnectionsUnclosed => {
+      setConnectionsUnclosed(newConnectionsUnclosed)
 
-    socket.emit('admin_in_support', params)
+      setConnectionSelected(connection)
+    })
   }
 
   return (

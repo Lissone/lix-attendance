@@ -45,13 +45,15 @@ io.on('connect', async (socket: Socket) => {
   //   })
   // })
 
-  socket.on('admin_in_support', async ({ clientId, adminId }) => {
+  socket.on('admin_in_support', async ({ clientId, adminId }, callback) => {
     await connectionUseCase.updateWithAdmin(clientId, adminId)
 
     const connectionsUnclosed = await connectionUseCase.getAllUnclosedByAdminId(adminId)
 
+    callback(connectionsUnclosed)
+
     const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
 
-    io.emit('admin_list_clients_without_admin', { connectionsUnclosed, connectionsWithoutAdmin }) // for all sockets
+    io.emit('admin_list_clients_without_admin', connectionsWithoutAdmin) // for all sockets
   })
 })
