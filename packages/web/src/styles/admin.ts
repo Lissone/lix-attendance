@@ -162,6 +162,20 @@ export const ChatContainer = styled.div`
   }
 `
 
+export const ChatEmpty = styled.div`
+  height: 100%;
+  width: 50rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+
+  background: var(--light);
+`
+
 export const ChatContent = styled.div`
   padding: 0 1rem;
   margin-bottom: 5.5rem;

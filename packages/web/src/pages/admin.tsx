@@ -15,6 +15,7 @@ import {
   ClientContact,
   ButtonContact,
   ChatContainer,
+  ChatEmpty,
   ChatContent,
   AdminMessage,
   ClientMessage
@@ -25,6 +26,7 @@ interface Connection {
   adminId: string | null
   clientId: string
   closedAt: Date | null
+  messages?: Message[]
   client: {
     name: string
     email: string
@@ -185,47 +187,53 @@ export default function Admin({ socket }: any) {
             ))}
           </div>
         </SidebarChat>
-
-        <ChatContainer>
-          <header>
-            <div>
-              <span>Cliente</span>
-              <h2>Rodrigo Lissone</h2>
-            </div>
-
-            {/* <RiArrowGoBackFill size={40} /> */}
-          </header>
-
-          <ChatContent>
-            <AdminMessage>
+        {connectionSelected ? (
+          <ChatContainer>
+            <header>
               <div>
-                <span>
-                  Olá gabriesdfsdfsdfsdf sdfsdfsdf sdfs dfsdf sdfsdfsdf
-                  sdsdfsdfl
-                </span>
+                <span>Cliente</span>
+                <h2>{connectionSelected.client.name}</h2>
               </div>
 
-              <p>19:54</p>
-            </AdminMessage>
+              {/* <RiArrowGoBackFill size={40} /> */}
+            </header>
 
-            <ClientMessage>
-              <div>
-                <span>Bom dia!</span>
-              </div>
+            <ChatContent>
+              {messages.map(message =>
+                message.adminId === null || message.adminId === undefined ? (
+                  <ClientMessage key={message.id}>
+                    <div>
+                      <span>{message.text}</span>
+                    </div>
 
-              <p>20:22</p>
-            </ClientMessage>
-          </ChatContent>
+                    <p>{message.createdHour}</p>
+                  </ClientMessage>
+                ) : (
+                  <AdminMessage key={message.id}>
+                    <div>
+                      <span>{message.text}</span>
+                    </div>
 
-          <footer>
-            <input maxLength={250} placeholder="Digite sua mensagem aqui" />
+                    <p>{message.createdHour}</p>
+                  </AdminMessage>
+                )
+              )}
+            </ChatContent>
 
-            <button type="button">
-              Enviar
-              <BiSend size={20} />
-            </button>
-          </footer>
-        </ChatContainer>
+            <footer>
+              <input maxLength={250} placeholder="Digite sua mensagem aqui" />
+
+              <button type="button">
+                Enviar
+                <BiSend size={20} />
+              </button>
+            </footer>
+          </ChatContainer>
+        ) : (
+          <ChatEmpty>
+            <h1>Escolha um usuário para tirar as dúvidas dele</h1>
+          </ChatEmpty>
+        )}
       </Container>
     </>
   )
