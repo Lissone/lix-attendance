@@ -9,12 +9,6 @@ export class MessageRepository implements IMessageRepository {
     return getRepository(MessageEntity)
   }
 
-  async getAllByClientId (clientId: string) : Promise<IMessage[]> {
-    const connections = await this.repository.find({ where: { clientId }, relations: ['client', 'admin'] })
-
-    return connections
-  }
-
   async create (message: IMessageCreate) : Promise<IMessage> {
     await this.repository.create(message)
 

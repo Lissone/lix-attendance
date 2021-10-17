@@ -28,13 +28,7 @@ io.on('connect', async (socket: Socket) => {
     callback({ connectionsUnclosed, connectionsWithoutAdmin })
   })
 
-  // socket.on('admin_list_messages_by_user', async ({ userId }, callback) => { // recebe parâmetros e função callback para devolver resposta
-  //   const allMessages = await messageUseCase.getAllByUser(userId)
-
-  //   callback(allMessages)
-  // })
-
-  socket.on('admin_send_message', async ({ connectionId, clientId, adminId, text }) => {
+  socket.on('admin_send_message', async ({ connectionId, clientId, adminId, text }) => { // receive parameters and callback function to return response
     const message = await messageUseCase.create({ connectionId, adminId, clientId, text })
 
     const client = await userUseCase.getOne(clientId)

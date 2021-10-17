@@ -8,7 +8,6 @@ interface IMessageCreate {
 }
 
 interface IMessageRepository {
-  getAllByClientId(clientId: string) : Promise<IMessage[]>
   create(message: IMessageCreate) : Promise<IMessage>
 }
 

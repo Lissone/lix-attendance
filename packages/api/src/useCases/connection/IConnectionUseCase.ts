@@ -7,7 +7,6 @@ interface IConnectionUseCase {
   getAllUnclosedByAdminId(adminId: string) : Promise<IConnection[]>
   getOne(connectionId: string) : Promise<IConnection | undefined>
   getOneByClientId(clientId: string) : Promise<IConnection | undefined>
-  // getOneByClientSocket(clientSocket: string) : Promise<IConnection | undefined>
   create(connection: IConnectionCreate) : Promise<IConnection>
   updateWithAdmin(clientId: string, adminId: string) : Promise<IConnection>
 }
