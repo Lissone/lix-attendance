@@ -10,7 +10,13 @@ export class UserRepository implements IUserRepository {
     return getRepository(UserEntity)
   }
 
-  async getOneByEmail (email: string) : Promise<IUser> {
+  async getOne (userId: string) : Promise<IUser | undefined> {
+    const user = await this.repository.findOne({ id: userId })
+
+    return user
+  }
+
+  async getOneByEmail (email: string) : Promise<IUser | undefined> {
     const user = await this.repository.findOne({ email })
 
     return user

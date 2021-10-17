@@ -21,15 +21,7 @@ export class UserController {
       if (!userAlreadyExists) {
         const ret = await this.useCaseUser.create(user)
 
-        let connection
-
-        if (user.type === 'client') {
-          connection = await this.useCaseConnection.create({
-            clientId: ret.id
-          })
-        }
-
-        return res.status(200).json({ user: ret, connectionId: connection.id })
+        return res.status(200).json({ user: ret })
       }
 
       const userUpdated = await this.useCaseUser.update({
@@ -38,12 +30,10 @@ export class UserController {
       })
 
       if (user.type === 'client') {
-        let connection = await this.useCaseConnection.getOneByClientId(userUpdated.id)
+        const connection = await this.useCaseConnection.getOneByClientId(userUpdated.id)
 
         if (!connection) {
-          connection = await this.useCaseConnection.create({
-            clientId: userUpdated.id
-          })
+          return res.status(200).json({ user: userUpdated })
         }
 
         return res.status(200).json({ user: userUpdated, connectionId: connection.id })

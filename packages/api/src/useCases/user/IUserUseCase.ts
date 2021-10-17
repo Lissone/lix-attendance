@@ -7,9 +7,10 @@ interface IUserCreate {
 }
 
 interface IUserUseCase {
-  getOneByEmail (email: string) : Promise<IUser>
-  create(user: IUserCreate) : Promise<IUser>
-  update(user: IUser) : Promise<IUser>
+  getOne (userId: string) : Promise<IUser | undefined>
+  getOneByEmail (email: string) : Promise<IUser | undefined>
+  create (user: IUserCreate) : Promise<IUser>
+  update (user: IUser) : Promise<IUser>
 }
 
 export { IUserUseCase, IUserCreate }

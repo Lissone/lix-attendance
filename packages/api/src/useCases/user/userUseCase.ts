@@ -9,7 +9,17 @@ export class UserUseCase implements IUserUseCase {
     this.repository = repository
   }
 
-  async getOneByEmail (email: string) : Promise<IUser> {
+  async getOne (userId: string) : Promise<IUser | undefined> {
+    try {
+      const user = await this.repository.getOne(userId)
+
+      return user
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  async getOneByEmail (email: string) : Promise<IUser | undefined> {
     try {
       const user = await this.repository.getOneByEmail(email)
 

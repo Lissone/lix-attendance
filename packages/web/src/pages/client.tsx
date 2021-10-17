@@ -35,7 +35,9 @@ export default function Client({ socket }: any) {
   const [text, setText] = useState('')
 
   useEffect(() => {
-    getAllMessages()
+    if (user.connectionId) {
+      getAllMessages()
+    }
   }, [])
 
   async function getAllMessages() {
