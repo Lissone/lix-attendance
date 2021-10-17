@@ -17,20 +17,23 @@ import {
   ClientMessage
 } from '../styles/client'
 
+interface Admin {
+  name: string
+  email: string
+}
+
 interface Message {
   id?: string
   adminId: string
   clientId: string
   text: string
   createdHour?: string
-  admin?: {
-    name: string
-  }
 }
 
 export default function Client({ socket }: any) {
   const { user } = useAuth()
 
+  const [adminConnected, setAdminConnected] = useState<Admin>(undefined)
   const [messages, setMessages] = useState([] as Message[])
   const [text, setText] = useState('')
 
@@ -38,6 +41,12 @@ export default function Client({ socket }: any) {
     if (user.connectionId) {
       getAllMessages()
     }
+  }, [])
+
+  useEffect(() => {
+    socket.on('admin_connect_with_client', ({ admin }) => {
+      setAdminConnected(admin)
+    })
   }, [])
 
   async function getAllMessages() {
@@ -92,8 +101,8 @@ export default function Client({ socket }: any) {
           <header>
             <div>
               <span>Atendente</span>
-              {messages[0]?.admin ? (
-                <h2>{messages[0]?.admin.name}</h2>
+              {adminConnected ? (
+                <h2>{adminConnected.name}</h2>
               ) : (
                 <h2>Aguardando atendimento...</h2>
               )}

@@ -5,16 +5,20 @@ import { io } from '../app'
 
 import { ConnectionRepository } from '@repositories/ConnectionRepository'
 // import { MessageRepository } from '@repositories/messageRepository'
+import { UserRepository } from '@repositories/UserRepository'
 
 import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
 // import { MessageUseCase } from '@useCases/message/messageUseCase'
+import { UserUseCase } from '@useCases/user/userUseCase'
 
 io.on('connect', async (socket: Socket) => {
   const connectionRepository = new ConnectionRepository()
   // // const messageRepository = new MessageRepository()
+  const userRepository = new UserRepository()
 
   const connectionUseCase = new ConnectionUseCase(connectionRepository)
   // // const messageUseCase = new MessageUseCase(messageRepository)
+  const userUseCase = new UserUseCase(userRepository)
 
   socket.on('admin_list_all_clients', async ({ adminId }, callback) => {
     const connectionsUnclosed = await connectionUseCase.getAllUnclosedByAdminId(adminId)
@@ -55,5 +59,13 @@ io.on('connect', async (socket: Socket) => {
     const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
 
     io.emit('admin_list_clients_without_admin', connectionsWithoutAdmin) // for all sockets
+
+    const user = await userUseCase.getOne(clientId)
+
+    const admin = await userUseCase.getOne(adminId)
+
+    io.to(user.socket).emit('admin_connect_with_client', {
+      admin
+    })
   })
 })
