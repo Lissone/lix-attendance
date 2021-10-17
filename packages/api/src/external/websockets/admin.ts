@@ -4,20 +4,20 @@ import { Socket } from 'socket.io'
 import { io } from '../app'
 
 import { ConnectionRepository } from '@repositories/ConnectionRepository'
-// import { MessageRepository } from '@repositories/messageRepository'
+import { MessageRepository } from '@repositories/MessageRepository'
 import { UserRepository } from '@repositories/UserRepository'
 
 import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
-// import { MessageUseCase } from '@useCases/message/messageUseCase'
+import { MessageUseCase } from '@useCases/message/messageUseCase'
 import { UserUseCase } from '@useCases/user/userUseCase'
 
 io.on('connect', async (socket: Socket) => {
   const connectionRepository = new ConnectionRepository()
-  // // const messageRepository = new MessageRepository()
+  const messageRepository = new MessageRepository()
   const userRepository = new UserRepository()
 
   const connectionUseCase = new ConnectionUseCase(connectionRepository)
-  // // const messageUseCase = new MessageUseCase(messageRepository)
+  const messageUseCase = new MessageUseCase(messageRepository)
   const userUseCase = new UserUseCase(userRepository)
 
   socket.on('admin_list_all_clients', async ({ adminId }, callback) => {
@@ -34,20 +34,15 @@ io.on('connect', async (socket: Socket) => {
   //   callback(allMessages)
   // })
 
-  // socket.on('admin_send_message', async ({ text, userId }) => {
-  //   await messageUseCase.create({
-  //     adminSocket: socket.id,
-  //     userId,
-  //     text
-  //   })
+  socket.on('admin_send_message', async ({ connectionId, clientId, adminId, text }) => {
+    const message = await messageUseCase.create({ connectionId, adminId, clientId, text })
 
-  //   const { userSocket } = await connectionUseCase.getOneByUserId(userId)
+    const client = await userUseCase.getOne(clientId)
 
-  //   io.to(userSocket).emit('admin_send_to_client', { // emitindo evento para socket específico
-  //     text,
-  //     socket_id: socket.id
-  //   })
-  // })
+    io.to(client.socket).emit('admin_send_to_client', { // emitting event for specific socket
+      message
+    })
+  })
 
   socket.on('admin_in_support', async ({ clientId, adminId }, callback) => {
     await connectionUseCase.updateWithAdmin(clientId, adminId)
@@ -64,7 +59,7 @@ io.on('connect', async (socket: Socket) => {
 
     const admin = await userUseCase.getOne(adminId)
 
-    io.to(user.socket).emit('admin_connect_with_client', {
+    io.to(user.socket).emit('admin_connect_with_client', { // emitting event for specific socket
       admin
     })
   })

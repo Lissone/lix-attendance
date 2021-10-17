@@ -18,6 +18,7 @@ import {
 } from '../styles/client'
 
 interface Admin {
+  id: string
   name: string
   email: string
 }
@@ -47,12 +48,26 @@ export default function Client({ socket }: any) {
     socket.on('admin_connect_with_client', ({ admin }) => {
       setAdminConnected(admin)
     })
-  }, [])
+
+    socket.on('admin_send_to_client', ({ message }) => {
+      const messageFormatted = {
+        id: message.id,
+        adminId: message.adminId,
+        clientId: message.clientId,
+        text: message.text,
+        createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+          locale: ptBR
+        })
+      }
+
+      setMessages([...messages, messageFormatted])
+    })
+  }, [adminConnected, messages])
 
   async function getAllMessages() {
     const { data } = await api.get(`/connections/${user.connectionId}`)
 
-    const messagesFormated = data.messages.map(message => ({
+    const messagesFormatted = data.messages.map(message => ({
       id: message.id,
       adminId: message.adminId,
       clientId: message.clientId,
@@ -62,7 +77,8 @@ export default function Client({ socket }: any) {
       })
     }))
 
-    setMessages(messagesFormated)
+    setAdminConnected(data.admin)
+    setMessages(messagesFormatted)
   }
 
   function handleSendMessage() {
@@ -70,7 +86,7 @@ export default function Client({ socket }: any) {
       const params = {
         connectionId: user.connectionId,
         clientId: user.id,
-        adminId: messages[0]?.adminId,
+        adminId: adminConnected.id,
         text
       }
 
@@ -148,7 +164,6 @@ export default function Client({ socket }: any) {
             <input
               value={text}
               onChange={event => setText(event.target.value)}
-              maxLength={250}
               placeholder="Digite sua mensagem aqui"
             />
 

@@ -55,6 +55,7 @@ export default function Admin({ socket }: any) {
   )
   const [connectionSelected, setConnectionSelected] = useState<Connection>(null)
   const [messages, setMessages] = useState([] as Message[])
+  const [text, setText] = useState('')
 
   useEffect(() => {
     if (!load) {
@@ -136,6 +137,31 @@ export default function Admin({ socket }: any) {
 
       setConnectionSelected(connection)
     })
+  }
+
+  function handleSendMessage() {
+    try {
+      const params = {
+        connectionId: connectionSelected.id,
+        clientId: connectionSelected.clientId,
+        adminId: user.id,
+        text
+      }
+
+      socket.emit('admin_send_message', params)
+
+      const message = {
+        ...params,
+        createdHour: format(new Date(), 'HH:mm', {
+          locale: ptBR
+        })
+      }
+
+      setMessages([...messages, message])
+      setText('')
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -221,9 +247,13 @@ export default function Admin({ socket }: any) {
             </ChatContent>
 
             <footer>
-              <input maxLength={250} placeholder="Digite sua mensagem aqui" />
+              <input
+                value={text}
+                onChange={event => setText(event.target.value)}
+                placeholder="Digite sua mensagem aqui"
+              />
 
-              <button type="button">
+              <button type="button" onClick={handleSendMessage}>
                 Enviar
                 <BiSend size={20} />
               </button>
