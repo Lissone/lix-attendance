@@ -75,8 +75,6 @@ export default function Admin({ socket }: any) {
     })
 
     socket.on('admin_receive_message', ({ clientId, message }) => {
-      console.log(connectionSelected)
-
       if (connectionSelected.clientId === clientId) {
         const messageFormatted = {
           id: message.id,
@@ -122,7 +120,7 @@ export default function Admin({ socket }: any) {
     )
   }
 
-  function handleSelectConnection(connectionId: string) {
+  function handleTalkClient(connectionId: string) {
     api.get(`/connections/${connectionId}`).then(({ data }) => {
       const messagesFormated = data.messages.map(message => ({
         id: message.id,
@@ -171,6 +169,8 @@ export default function Admin({ socket }: any) {
 
   function handleSendMessage() {
     try {
+      console.log(user)
+
       const params = {
         connectionId: connectionSelected.id,
         clientId: connectionSelected.clientId,
@@ -186,6 +186,8 @@ export default function Admin({ socket }: any) {
           locale: ptBR
         })
       }
+
+      console.log(message)
 
       const newMessages = [...connectionSelected.messages, message]
 
@@ -232,7 +234,7 @@ export default function Admin({ socket }: any) {
                   <ButtonContact
                     type="button"
                     backgroundColor="green"
-                    onClick={() => handleSelectConnection(connection.id)}
+                    onClick={() => handleTalkClient(connection.id)}
                   >
                     Conversar
                   </ButtonContact>
@@ -263,14 +265,6 @@ export default function Admin({ socket }: any) {
             <ChatContent>
               {connectionSelected.messages.map(message =>
                 message.adminId === null || message.adminId === undefined ? (
-                  <ClientMessage key={message.id}>
-                    <div>
-                      <span>{message.text}</span>
-                    </div>
-
-                    <p>{message.createdHour}</p>
-                  </ClientMessage>
-                ) : (
                   <AdminMessage key={message.id}>
                     <div>
                       <span>{message.text}</span>
@@ -278,6 +272,14 @@ export default function Admin({ socket }: any) {
 
                     <p>{message.createdHour}</p>
                   </AdminMessage>
+                ) : (
+                  <ClientMessage key={message.id}>
+                    <div>
+                      <span>{message.text}</span>
+                    </div>
+
+                    <p>{message.createdHour}</p>
+                  </ClientMessage>
                 )
               )}
             </ChatContent>

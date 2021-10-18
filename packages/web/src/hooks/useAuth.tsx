@@ -16,6 +16,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   signIn: (user: User) => Promise<void>
+  updateClientConnection: (connectionId: string) => void
 }
 
 interface AuthContextProviderProps {
@@ -49,11 +50,19 @@ export function AuthProvider({ children }: AuthContextProviderProps) {
     }
   }
 
+  function updateClientConnection(connectionId: string) {
+    setUser({
+      ...user,
+      connectionId
+    })
+  }
+
   return (
     <AuthContext.Provider
       value={{
         user,
-        signIn
+        signIn,
+        updateClientConnection
       }}
     >
       {children}

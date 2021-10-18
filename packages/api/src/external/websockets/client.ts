@@ -19,7 +19,7 @@ io.on('connect', (socket: Socket) => {
   const messageUseCase = new MessageUseCase(messageRepository)
   const userUseCase = new UserUseCase(userRepository)
 
-  socket.on('client_send_to_admin', async ({ connectionId, clientId, adminId, text }) => {
+  socket.on('client_send_to_admin', async ({ connectionId, clientId, adminId, text }, callback) => {
     if (!connectionId) {
       const connection = await connectionUseCase.create({ clientId })
 
@@ -28,6 +28,8 @@ io.on('connect', (socket: Socket) => {
       const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
 
       io.emit('admin_list_clients_without_admin', connectionsWithoutAdmin) // for all sockets
+
+      callback(connection.id)
     } else {
       const message = await messageUseCase.create({ connectionId, clientId, text })
 

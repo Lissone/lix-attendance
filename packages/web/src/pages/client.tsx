@@ -32,7 +32,7 @@ interface Message {
 }
 
 export default function Client({ socket }: any) {
-  const { user } = useAuth()
+  const { user, updateClientConnection } = useAuth()
 
   const [adminConnected, setAdminConnected] = useState<Admin>(undefined)
   const [messages, setMessages] = useState([] as Message[])
@@ -86,11 +86,13 @@ export default function Client({ socket }: any) {
       const params = {
         connectionId: user.connectionId,
         clientId: user.id,
-        adminId: adminConnected.id,
+        adminId: adminConnected?.id,
         text
       }
 
-      socket.emit('client_send_to_admin', params)
+      socket.emit('client_send_to_admin', params, connectionId => {
+        updateClientConnection(connectionId)
+      })
 
       const message = {
         ...params,
