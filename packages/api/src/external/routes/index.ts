@@ -1,25 +1,24 @@
 import { Router } from 'express'
 
-import { UserRepository } from '@repositories/userRepository'
-import { MessageRepository } from '@repositories/messageRepository'
+import { ConnectionRepository } from '@repositories/ConnectionRepository'
+import { UserRepository } from '@repositories/UserRepository'
 
-import { MessageUseCase } from '@useCases/message/messageUseCase'
+import { ConnectionUseCase } from '@useCases/connection/connectionUseCase'
 import { UserUseCase } from '@useCases/user/userUseCase'
 
-import { UserController } from '@controllers/userController'
-import { MessageController } from '@controllers/messageController'
+import { ConnectionController } from '@controllers/ConnectionController'
+import { UserController } from '@controllers/UserController'
 
 export const apiRoutes = Router()
 
+const connectionRepository = new ConnectionRepository()
+const connectionUseCase = new ConnectionUseCase(connectionRepository)
+const connectionController = new ConnectionController(connectionUseCase)
+
 const userRepository = new UserRepository()
 const userUseCase = new UserUseCase(userRepository)
-const userController = new UserController(userUseCase)
+const userController = new UserController(userUseCase, connectionUseCase)
 
-const messageRepository = new MessageRepository()
-const messageUseCase = new MessageUseCase(messageRepository)
-const messageController = new MessageController(messageUseCase)
+apiRoutes.get('/api/v1/connections/:connectionId', (req, res) => connectionController.getOne(req, res))
 
-apiRoutes.post('/api/v1/users', (req, res) => userController.create(req, res))
-
-apiRoutes.post('/api/v1/messages', (req, res) => messageController.create(req, res))
-apiRoutes.get('/api/v1/messages/:id', (req, res) => messageController.getAllByUser(req, res))
+apiRoutes.post('/api/v1/users', (req, res) => userController.signIn(req, res))

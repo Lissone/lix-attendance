@@ -10,37 +10,44 @@ export class ConnectionRepository implements IConnectionRepository {
   }
 
   async getAllWithoutAdmin () : Promise<IConnection[]> {
-    const connections = await this.repository.find({ where: { adminSocket: null }, relations: ['user'] })
+    const connections = await this.repository.find({ where: { adminId: null }, relations: ['client'] })
 
     return connections
   }
 
-  async getOneByUserId (userId: string) : Promise<IConnection | undefined> {
-    const connection = await this.repository.findOne({ userId })
+  async getAllByAdminId (adminId: string) : Promise<IConnection[]> {
+    const connections = await this.repository.find({ where: { adminId }, relations: ['client', 'admin'] })
+
+    return connections
+  }
+
+  async getAllUnclosedByAdminId (adminId: string) : Promise<IConnection[]> {
+    const connections = await this.repository.find({ where: { adminId, closedAt: null }, relations: ['client', 'admin'] })
+
+    return connections
+  }
+
+  async getOne (connectionId: string) : Promise<IConnection | undefined> {
+    const connection = await this.repository.findOne({ where: { id: connectionId }, relations: ['client', 'admin', 'messages'] })
 
     return connection
   }
 
-  async getOneByUserSocket (userSocket: string) : Promise<IConnection | undefined> {
-    const connection = await this.repository.findOne({ userSocket })
+  async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
+    const connection = await this.repository.findOne({ clientId })
 
     return connection
   }
 
-  async create ({ id, adminSocket, userSocket, userId }: IConnectionCreate) : Promise<IConnection> {
-    const connection = this.repository.create({
-      id,
-      adminSocket,
-      userSocket,
-      userId
-    })
+  async create (connection: IConnectionCreate) : Promise<IConnection> {
+    this.repository.create(connection)
 
-    await this.repository.save(connection)
+    const ret = await this.repository.save(connection)
 
-    return connection
+    return ret
   }
 
-  async updateAdminSocket (connection: IConnection) : Promise<IConnection> {
+  async update (connection: IConnection) : Promise<IConnection> {
     const ret = await this.repository.save(connection)
 
     return ret

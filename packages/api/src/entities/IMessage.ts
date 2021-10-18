@@ -1,13 +1,17 @@
+import { IConnection } from './IConnection'
 import { IUser } from './IUser'
 
 interface IMessage {
   id: string
-  adminSocket: string
-  userId: string
+  connectionId: string
+  adminId?: string
+  clientId: string
   text: string
   createdAt: Date
   updatedAt: Date
-  user: IUser
+  connection?: IConnection
+  admin?: IUser
+  client: IUser
 }
 
 export { IMessage }

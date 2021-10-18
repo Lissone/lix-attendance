@@ -10,7 +10,15 @@ const UserEntity = new EntitySchema<IUser>({
       primary: true,
       generated: 'uuid'
     },
+    name: {
+      type: String,
+      nullable: false
+    },
     email: {
+      type: String,
+      nullable: false
+    },
+    socket: {
       type: String,
       nullable: false
     },

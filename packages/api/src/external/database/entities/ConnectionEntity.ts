@@ -10,17 +10,18 @@ const ConnectionEntity = new EntitySchema<IConnection>({
       primary: true,
       generated: 'uuid'
     },
-    adminSocket: {
+    adminId: {
       type: String,
       nullable: true
     },
-    userId: {
+    clientId: {
       type: String,
       nullable: false
     },
-    userSocket: {
-      type: String,
-      nullable: false
+    closedAt: {
+      name: 'closedAt',
+      type: 'datetime2',
+      nullable: true
     },
     createdAt: {
       name: 'createdAt',
@@ -34,10 +35,23 @@ const ConnectionEntity = new EntitySchema<IConnection>({
     }
   },
   relations: {
-    user: {
+    messages: {
+      type: 'one-to-many',
+      target: 'message',
+      inverseSide: 'connection'
+    },
+    admin: {
       type: 'many-to-one',
       joinColumn: ({
-        name: 'userId'
+        name: 'adminId'
+      }),
+      target: 'user',
+      nullable: true
+    },
+    client: {
+      type: 'many-to-one',
+      joinColumn: ({
+        name: 'clientId'
       }),
       target: 'user',
       nullable: false

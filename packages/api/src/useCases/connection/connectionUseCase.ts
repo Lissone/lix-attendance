@@ -19,9 +19,29 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
-  async getOneByUserId (userId: string) : Promise<IConnection | undefined> {
+  async getAllByAdminId (adminId: string) : Promise<IConnection[]> {
     try {
-      const connection = await this.repository.getOneByUserId(userId)
+      const connections = await this.repository.getAllByAdminId(adminId)
+
+      return connections
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  async getAllUnclosedByAdminId (adminId: string) : Promise<IConnection[]> {
+    try {
+      const connections = await this.repository.getAllUnclosedByAdminId(adminId)
+
+      return connections
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  async getOne (connectionId: string) : Promise<IConnection | undefined> {
+    try {
+      const connection = await this.repository.getOne(connectionId)
 
       return connection
     } catch (err) {
@@ -29,9 +49,9 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
-  async getOneByUserSocket (userSocket: string) : Promise<IConnection | undefined> {
+  async getOneByClientId (clientId: string) : Promise<IConnection | undefined> {
     try {
-      const connection = await this.repository.getOneByUserSocket(userSocket)
+      const connection = await this.repository.getOneByClientId(clientId)
 
       return connection
     } catch (err) {
@@ -49,16 +69,16 @@ export class ConnectionUseCase implements IConnectionUseCase {
     }
   }
 
-  async updateAdminSocket (userId: string, adminSocket: string) : Promise<IConnection> {
+  async updateWithAdmin (clientId: string, adminId: string) : Promise<IConnection> {
     try {
-      const connection = await this.repository.getOneByUserId(userId)
+      const connection = await this.repository.getOneByClientId(clientId)
 
-      const connectionWithNewAdminSocket = {
-        adminSocket,
-        ...connection
+      const connectionWithAdmin = {
+        ...connection,
+        adminId
       }
 
-      const ret = await this.repository.updateAdminSocket(connectionWithNewAdminSocket)
+      const ret = await this.repository.update(connectionWithAdmin)
 
       return ret
     } catch (err) {

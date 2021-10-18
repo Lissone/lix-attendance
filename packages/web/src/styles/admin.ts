@@ -61,22 +61,32 @@ export const ClientContact = styled.div`
     flex-direction: column;
     gap: 0.2rem;
   }
+`
 
-  button {
-    padding: 0.8rem 1.5rem;
+interface ButtonContactProps {
+  backgroundColor: 'green' | 'blue'
+}
 
-    border: 1px solid var(--gray-600);
-    border-radius: 0.35rem;
-    box-shadow: rgba(0, 0, 0, 0.1) -4px 9px 25px -6px;
+const colors = {
+  green: 'var(--green-400)',
+  blue: 'var(--blue-200)'
+}
 
-    color: var(--gray-blue-800);
-    background: var(--green-400);
+export const ButtonContact = styled.button<ButtonContactProps>`
+  padding: 0.8rem 1.5rem;
 
-    transition: filter 0.2s;
+  border: 1px solid var(--gray-600);
+  border-radius: 0.35rem;
+  box-shadow: rgba(0, 0, 0, 0.1) -4px 9px 25px -6px;
 
-    &:hover {
-      filter: brightness(0.9);
-    }
+  color: var(--gray-blue-800);
+  background: ${props =>
+    props.backgroundColor ? colors[props.backgroundColor] : 'transparent'};
+
+  transition: filter 0.2s;
+
+  &:hover {
+    filter: brightness(0.9);
   }
 `
 
@@ -152,8 +162,25 @@ export const ChatContainer = styled.div`
   }
 `
 
+export const ChatEmpty = styled.div`
+  height: 100%;
+  width: 50rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+
+  background: var(--light);
+`
+
 export const ChatContent = styled.div`
   padding: 0 1rem;
+  margin-bottom: 5.5rem;
+
+  overflow-y: scroll;
 `
 
 export const AdminMessage = styled.div`

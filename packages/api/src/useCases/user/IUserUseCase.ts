@@ -1,8 +1,16 @@
 import { IUser } from '@entities/IUser'
 
-interface IUserUseCase {
-  getOneByEmail (email: string) : Promise<IUser>
-  create(email: string) : Promise<IUser>
+interface IUserCreate {
+  name: string
+  email: string
+  socket: string
 }
 
-export { IUserUseCase }
+interface IUserUseCase {
+  getOne (userId: string) : Promise<IUser | undefined>
+  getOneByEmail (email: string) : Promise<IUser | undefined>
+  create (user: IUserCreate) : Promise<IUser>
+  update (user: IUser) : Promise<IUser>
+}
+
+export { IUserUseCase, IUserCreate }

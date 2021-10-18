@@ -9,19 +9,9 @@ export class MessageUseCase implements IMessageUseCase {
     this.repository = repository
   }
 
-  async getAllByUser (userId: string) : Promise<IMessage[]> {
+  async create (message: IMessageCreate) : Promise<IMessage> {
     try {
-      const messages = await this.repository.getAllByUser(userId)
-
-      return messages
-    } catch (err) {
-      throw new Error(err)
-    }
-  }
-
-  async create (connection: IMessageCreate) : Promise<IMessage> {
-    try {
-      const ret = await this.repository.create(connection)
+      const ret = await this.repository.create(message)
 
       return ret
     } catch (err) {
