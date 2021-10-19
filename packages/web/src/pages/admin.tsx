@@ -40,6 +40,7 @@ interface Message {
   clientId: string
   text: string
   createdHour?: string
+  createdAt?: string
 }
 
 export default function Admin({ socket }: any) {
@@ -121,8 +122,33 @@ export default function Admin({ socket }: any) {
   }
 
   function handleTalkClient(connectionId: string) {
-    api.get(`/connections/${connectionId}`).then(({ data }) => {
-      const messagesFormated = data.messages.map(message => ({
+    try {
+      api.get<Connection>(`/connections/${connectionId}`).then(({ data }) => {
+        const messagesFormatted = data.messages.map(message => ({
+          id: message.id,
+          adminId: message.adminId,
+          clientId: message.clientId,
+          text: message.text,
+          createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+            locale: ptBR
+          })
+        }))
+
+        setConnectionSelected({
+          ...data,
+          messages: messagesFormatted
+        })
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function handleConnectWithClient(connectionId: string) {
+    try {
+      const { data } = await api.get<Connection>(`/connections/${connectionId}`)
+
+      const messagesFormatted = data.messages.map(message => ({
         id: message.id,
         adminId: message.adminId,
         clientId: message.clientId,
@@ -132,45 +158,26 @@ export default function Admin({ socket }: any) {
         })
       }))
 
-      setConnectionSelected({
-        ...data,
-        messages: messagesFormated
+      const params = {
+        clientId: data.clientId,
+        adminId: user.id
+      }
+
+      socket.emit('admin_in_support', params, newConnectionsUnclosed => {
+        setConnectionsUnclosed(newConnectionsUnclosed)
+
+        setConnectionSelected({
+          ...data,
+          messages: messagesFormatted
+        })
       })
-    })
-  }
-
-  async function handleConnectWithClient(connectionId: string) {
-    const { data } = await api.get(`/connections/${connectionId}`)
-
-    const messagesFormated = data.messages.map(message => ({
-      id: message.id,
-      adminId: message.adminId,
-      clientId: message.clientId,
-      text: message.text,
-      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
-        locale: ptBR
-      })
-    }))
-
-    const params = {
-      clientId: data.clientId,
-      adminId: user.id
+    } catch (err) {
+      console.error(err)
     }
-
-    socket.emit('admin_in_support', params, newConnectionsUnclosed => {
-      setConnectionsUnclosed(newConnectionsUnclosed)
-
-      setConnectionSelected({
-        ...data,
-        messages: messagesFormated
-      })
-    })
   }
 
   function handleSendMessage() {
     try {
-      console.log(user)
-
       const params = {
         connectionId: connectionSelected.id,
         clientId: connectionSelected.clientId,
@@ -186,8 +193,6 @@ export default function Admin({ socket }: any) {
           locale: ptBR
         })
       }
-
-      console.log(message)
 
       const newMessages = [...connectionSelected.messages, message]
 

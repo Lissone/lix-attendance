@@ -13,6 +13,11 @@ interface User {
   createdAt?: Date
 }
 
+interface UserResponse {
+  user: User
+  connectionId?: string
+}
+
 interface AuthContextType {
   user: User | null
   signIn: (user: User) => Promise<void>
@@ -32,7 +37,7 @@ export function AuthProvider({ children }: AuthContextProviderProps) {
 
   async function signIn(newUser: User) {
     try {
-      const { data } = await api.post('/users', { user: newUser })
+      const { data } = await api.post<UserResponse>('/users', { user: newUser })
 
       setUser({
         ...newUser,

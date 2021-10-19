@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -17,10 +18,21 @@ import {
   ClientMessage
 } from '../styles/client'
 
-interface Admin {
+interface User {
   id: string
   name: string
   email: string
+  socket?: string
+}
+
+interface Connection {
+  id: string
+  adminId: string | null
+  clientId: string
+  closedAt: Date | null
+  messages?: Message[]
+  admin: User
+  client: User
 }
 
 interface Message {
@@ -29,12 +41,13 @@ interface Message {
   clientId: string
   text: string
   createdHour?: string
+  createdAt?: string
 }
 
 export default function Client({ socket }: any) {
   const { user, updateClientConnection } = useAuth()
 
-  const [adminConnected, setAdminConnected] = useState<Admin>(undefined)
+  const [adminConnected, setAdminConnected] = useState<User>(undefined)
   const [messages, setMessages] = useState([] as Message[])
   const [text, setText] = useState('')
 
@@ -65,20 +78,26 @@ export default function Client({ socket }: any) {
   }, [adminConnected, messages])
 
   async function getAllMessages() {
-    const { data } = await api.get(`/connections/${user.connectionId}`)
+    try {
+      const { data } = await api.get<Connection>(
+        `/connections/${user.connectionId}`
+      )
 
-    const messagesFormatted = data.messages.map(message => ({
-      id: message.id,
-      adminId: message.adminId,
-      clientId: message.clientId,
-      text: message.text,
-      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
-        locale: ptBR
-      })
-    }))
+      const messagesFormatted = data.messages.map(message => ({
+        id: message.id,
+        adminId: message.adminId,
+        clientId: message.clientId,
+        text: message.text,
+        createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+          locale: ptBR
+        })
+      }))
 
-    setAdminConnected(data.admin)
-    setMessages(messagesFormatted)
+      setAdminConnected(data.admin)
+      setMessages(messagesFormatted)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   function handleSendMessage() {
