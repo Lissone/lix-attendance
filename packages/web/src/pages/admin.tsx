@@ -60,7 +60,7 @@ export default function Admin({ socket }: any) {
 
       setLoad(true)
     }
-  }, [connectionSelected])
+  }, [])
 
   useEffect(() => {
     socket.on('admin_list_clients_without_admin', connectionsWithoutAdmin => {
@@ -222,7 +222,9 @@ export default function Admin({ socket }: any) {
             </div>
 
             <Link href="/">
-              <BiExit size={35} />
+              <a>
+                <BiExit size={35} />
+              </a>
             </Link>
           </header>
 

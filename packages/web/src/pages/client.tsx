@@ -147,7 +147,9 @@ export default function Client({ socket }: any) {
             </div>
 
             <Link href="/">
-              <BiExit size={40} />
+              <a>
+                <BiExit size={40} />
+              </a>
             </Link>
           </header>
 

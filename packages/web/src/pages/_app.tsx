@@ -22,21 +22,17 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <>
       <GlobalStyle />
 
-      {socket ? (
-        <AuthProvider>
-          <ToastContainer
-            position="top-center"
-            autoClose={4000}
-            hideProgressBar={false}
-            transition={Slide}
-            pauseOnHover={false}
-          />
+      <AuthProvider>
+        <ToastContainer
+          position="top-center"
+          autoClose={4000}
+          hideProgressBar={false}
+          transition={Slide}
+          pauseOnHover={false}
+        />
 
-          <Component socket={socket} {...pageProps} />
-        </AuthProvider>
-      ) : (
-        <h1>Error to connect on server</h1>
-      )}
+        <Component socket={socket} {...pageProps} />
+      </AuthProvider>
     </>
   )
 }
