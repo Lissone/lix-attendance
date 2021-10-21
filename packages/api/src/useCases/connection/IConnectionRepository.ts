@@ -6,6 +6,15 @@ interface IConnectionCreate {
   clientId: string
 }
 
+interface IConnectionUpdate {
+  id: string
+  adminId: string
+  clientId: string
+  createdAt: Date
+  updatedAt: Date
+  closedAt?: Date
+}
+
 interface IConnectionRepository {
   getAllWithoutAdmin() : Promise<IConnection[]>
   getAllByAdminId(adminId: string) : Promise<IConnection[]>
@@ -13,7 +22,7 @@ interface IConnectionRepository {
   getOne(connectionId: string) : Promise<IConnection | undefined>
   getOneByClientId(clientId: string) : Promise<IConnection | undefined>
   create(connection: IConnectionCreate) : Promise<IConnection>
-  update(connection: IConnection) : Promise<IConnection>
+  update(connection: IConnectionUpdate) : Promise<IConnection>
 }
 
-export { IConnectionRepository, IConnectionCreate }
+export { IConnectionRepository, IConnectionCreate, IConnectionUpdate }

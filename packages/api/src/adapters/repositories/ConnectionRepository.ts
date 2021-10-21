@@ -2,7 +2,7 @@ import { Repository, getRepository } from 'typeorm'
 
 import { IConnection } from '@entities/IConnection'
 import { ConnectionEntity } from '@external/database/entities/ConnectionEntity'
-import { IConnectionCreate, IConnectionRepository } from '@useCases/connection/IConnectionRepository'
+import { IConnectionCreate, IConnectionRepository, IConnectionUpdate } from '@useCases/connection/IConnectionRepository'
 
 export class ConnectionRepository implements IConnectionRepository {
   private get repository () : Repository<IConnection> {
@@ -47,7 +47,7 @@ export class ConnectionRepository implements IConnectionRepository {
     return ret
   }
 
-  async update (connection: IConnection) : Promise<IConnection> {
+  async update (connection: IConnectionUpdate) : Promise<IConnection> {
     const ret = await this.repository.save(connection)
 
     return ret

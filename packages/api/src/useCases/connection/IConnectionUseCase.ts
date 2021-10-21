@@ -1,5 +1,5 @@
 import { IConnection } from '@entities/IConnection'
-import { IConnectionCreate } from './IConnectionRepository'
+import { IConnectionCreate, IConnectionUpdate } from './IConnectionRepository'
 
 interface IConnectionUseCase {
   getAllWithoutAdmin() : Promise<IConnection[]>
@@ -8,6 +8,7 @@ interface IConnectionUseCase {
   getOne(connectionId: string) : Promise<IConnection | undefined>
   getOneByClientId(clientId: string) : Promise<IConnection | undefined>
   create(connection: IConnectionCreate) : Promise<IConnection>
+  update(connection: IConnectionUpdate) : Promise<IConnection>
   updateWithAdmin(clientId: string, adminId: string) : Promise<IConnection>
 }
 

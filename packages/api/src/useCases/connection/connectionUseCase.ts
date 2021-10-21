@@ -1,5 +1,5 @@
 import { IConnection } from '@entities/IConnection'
-import { IConnectionCreate, IConnectionRepository } from './IConnectionRepository'
+import { IConnectionCreate, IConnectionRepository, IConnectionUpdate } from './IConnectionRepository'
 import { IConnectionUseCase } from './IConnectionUseCase'
 
 export class ConnectionUseCase implements IConnectionUseCase {
@@ -62,6 +62,16 @@ export class ConnectionUseCase implements IConnectionUseCase {
   async create (connection: IConnectionCreate) : Promise<IConnection> {
     try {
       const ret = await this.repository.create(connection)
+
+      return ret
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  async update (connection: IConnectionUpdate) : Promise<IConnection> {
+    try {
+      const ret = await this.repository.update(connection)
 
       return ret
     } catch (err) {

@@ -41,4 +41,25 @@ io.on('connect', (socket: Socket) => {
       })
     }
   })
+
+  socket.on('client_reopen_connection', async (connectionId: string) => {
+    const connection = await connectionUseCase.getOne(connectionId)
+
+    const connectionUnclosed = {
+      id: connection.id,
+      adminId: connection.adminId,
+      clientId: connection.clientId,
+      createdAt: connection.createdAt,
+      updatedAt: connection.updatedAt,
+      closedAt: null
+    }
+
+    await connectionUseCase.update(connectionUnclosed)
+
+    const newConnection = await connectionUseCase.getOne(connectionId)
+
+    io.to(connection.admin.socket).emit('client_reopen_connection_with_admin', { // emitting event for specific socket
+      connection: newConnection
+    })
+  })
 })

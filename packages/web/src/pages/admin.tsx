@@ -41,6 +41,7 @@ interface Message {
   text: string
   createdHour?: string
   createdAt?: string
+  updatedAt?: string
 }
 
 export default function Admin({ socket }: any) {
@@ -78,10 +79,7 @@ export default function Admin({ socket }: any) {
     socket.on('admin_receive_message', ({ clientId, message }) => {
       if (connectionSelected.clientId === clientId) {
         const messageFormatted = {
-          id: message.id,
-          adminId: message.adminId,
-          clientId: message.clientId,
-          text: message.text,
+          ...message,
           createdHour: format(parseISO(message.createdAt), 'HH:mm', {
             locale: ptBR
           })
@@ -96,9 +94,14 @@ export default function Admin({ socket }: any) {
       }
     })
 
+    socket.on('client_reopen_connection_with_admin', ({ connection }) => {
+      setConnections(prevState => [connection, ...prevState])
+    })
+
     return () => {
       socket.off('admin_list_clients_without_admin')
       socket.off('admin_receive_message')
+      socket.off('client_reopen_connection_with_admin')
     }
   }, [connections, connectionsUnclosed, connectionSelected])
 
@@ -125,10 +128,7 @@ export default function Admin({ socket }: any) {
     try {
       api.get<Connection>(`/connections/${connectionId}`).then(({ data }) => {
         const messagesFormatted = data.messages.map(message => ({
-          id: message.id,
-          adminId: message.adminId,
-          clientId: message.clientId,
-          text: message.text,
+          ...message,
           createdHour: format(parseISO(message.createdAt), 'HH:mm', {
             locale: ptBR
           })
@@ -149,10 +149,7 @@ export default function Admin({ socket }: any) {
       const { data } = await api.get<Connection>(`/connections/${connectionId}`)
 
       const messagesFormatted = data.messages.map(message => ({
-        id: message.id,
-        adminId: message.adminId,
-        clientId: message.clientId,
-        text: message.text,
+        ...message,
         createdHour: format(parseISO(message.createdAt), 'HH:mm', {
           locale: ptBR
         })
@@ -171,6 +168,28 @@ export default function Admin({ socket }: any) {
           messages: messagesFormatted
         })
       })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  function handleCloseConnection() {
+    try {
+      socket.emit(
+        'admin_close_connection',
+        connectionSelected,
+        connectionId => {
+          if (connectionSelected.id === connectionId) {
+            setConnectionSelected(null)
+          }
+
+          const connectionsFiltered = connections.filter(
+            connection => connection.id !== connectionId
+          )
+
+          setConnections(connectionsFiltered)
+        }
+      )
     } catch (err) {
       console.error(err)
     }
@@ -266,7 +285,9 @@ export default function Admin({ socket }: any) {
                 <h2>{connectionSelected.client.name}</h2>
               </div>
 
-              {/* <RiArrowGoBackFill size={40} /> */}
+              <button type="button" onClick={() => handleCloseConnection()}>
+                Finalizar conexão
+              </button>
             </header>
 
             <ChatContent>

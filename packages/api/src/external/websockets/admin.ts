@@ -3,6 +3,8 @@ import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
+import { IConnection } from '@entities/IConnection'
+
 import { ConnectionRepository } from '@repositories/ConnectionRepository'
 import { MessageRepository } from '@repositories/MessageRepository'
 import { UserRepository } from '@repositories/UserRepository'
@@ -26,6 +28,25 @@ io.on('connect', async (socket: Socket) => {
     const connectionsWithoutAdmin = await connectionUseCase.getAllWithoutAdmin()
 
     callback({ connectionsUnclosed, connectionsWithoutAdmin })
+  })
+
+  socket.on('admin_close_connection', async (connection: IConnection, callback) => {
+    const newConnection = {
+      id: connection.id,
+      adminId: connection.adminId,
+      clientId: connection.clientId,
+      createdAt: connection.createdAt,
+      updatedAt: connection.updatedAt,
+      closedAt: new Date()
+    }
+
+    const connectionUpdated = await connectionUseCase.update(newConnection)
+
+    io.to(connection.client.socket).emit('admin_close_connection_with_client', { // emitting event for specific socket
+      connection: connectionUpdated
+    })
+
+    callback(connectionUpdated.id)
   })
 
   socket.on('admin_send_message', async ({ connectionId, clientId, adminId, text }) => { // receive parameters and callback function to return response
