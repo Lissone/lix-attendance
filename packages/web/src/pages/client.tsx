@@ -15,7 +15,8 @@ import {
   ChatContent,
   Information,
   AdminMessage,
-  ClientMessage
+  ClientMessage,
+  ClosedConnection
 } from '../styles/client'
 
 interface User {
@@ -215,9 +216,17 @@ export default function Client({ socket }: any) {
             )}
 
             {connection.closedAt && (
-              <button type="button" onClick={handleReopenConnection}>
-                Reabrir chamado
-              </button>
+              <ClosedConnection>
+                <h3>Admin fechou a conexão</h3>
+                <span>
+                  Se suas dúvidas ainda não foram respondidas, abra novamente a
+                  conexão com seu admin responsável.
+                </span>
+
+                <button type="button" onClick={handleReopenConnection}>
+                  Reabrir chamado
+                </button>
+              </ClosedConnection>
             )}
           </ChatContent>
 
@@ -226,9 +235,14 @@ export default function Client({ socket }: any) {
               value={text}
               onChange={event => setText(event.target.value)}
               placeholder="Digite sua mensagem aqui"
+              disabled={!!connection.closedAt}
             />
 
-            <button type="button" onClick={handleSendMessage}>
+            <button
+              type="button"
+              onClick={handleSendMessage}
+              disabled={!!connection.closedAt}
+            >
               Enviar
               <BiSend size={20} />
             </button>

@@ -95,6 +95,7 @@ export const ChatContainer = styled.div`
 `
 
 export const ChatContent = styled.div`
+  height: 100%;
   padding: 0 1rem;
   margin-bottom: 5.5rem;
 
@@ -166,5 +167,50 @@ export const ClientMessage = styled.div`
     margin-right: 0.5rem;
 
     color: var(--gray-600);
+  }
+`
+
+export const ClosedConnection = styled.div`
+  margin-top: 4rem;
+  padding: 4rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border-top: 1px solid var(--gray-300);
+
+  h3 {
+    font-size: 1.9rem;
+
+    text-align: center;
+  }
+
+  span {
+    margin-top: 1rem;
+
+    font-size: 1.2rem;
+
+    text-align: center;
+
+    color: var(--gray-blue-500);
+  }
+
+  button {
+    margin-top: 2rem;
+    padding: 0.8rem 2rem;
+
+    border: 0;
+    border-radius: 0.35rem;
+    box-shadow: rgba(0, 0, 0, 0.1) -4px 9px 25px -6px;
+
+    color: var(--gray-800);
+    background: var(--green-400);
+
+    transition: filter 0.2s;
+
+    &:hover {
+      filter: brightness(0.9);
+    }
   }
 `

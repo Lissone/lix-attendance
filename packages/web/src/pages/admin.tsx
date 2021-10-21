@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { format, parseISO, getTime } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import { BiSend, BiExit } from 'react-icons/bi'
+import { AiOutlineLock } from 'react-icons/ai'
 
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../services/api'
@@ -286,7 +287,8 @@ export default function Admin({ socket }: any) {
               </div>
 
               <button type="button" onClick={() => handleCloseConnection()}>
-                Finalizar conexão
+                <AiOutlineLock size={20} />
+                Fechar conexão
               </button>
             </header>
 
@@ -327,7 +329,9 @@ export default function Admin({ socket }: any) {
           </ChatContainer>
         ) : (
           <ChatEmpty>
-            <h1>Escolha um usuário para tirar as dúvidas dele</h1>
+            <img src="/logo.svg" alt="LixAttendance" />
+
+            <span>Escolha um usuário para tirar as dúvidas dele.</span>
           </ChatEmpty>
         )}
       </Container>
