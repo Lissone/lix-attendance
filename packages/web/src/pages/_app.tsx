@@ -7,7 +7,8 @@ import { AuthProvider } from '../hooks/useAuth'
 
 import { GlobalStyle } from '../styles/global'
 
-const httpServer = process.env.API_HOST || 'http://localhost:5000'
+const httpServer =
+  process.env.NEXT_PUBLIC_BASE_URL_API || 'http://localhost:5000'
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [socket, setSocket] = useState(null)
