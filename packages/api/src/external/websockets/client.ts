@@ -58,7 +58,7 @@ io.on('connect', (socket: Socket) => {
 
     const newConnection = await connectionUseCase.getOne(connectionId)
 
-    io.to(connection.admin.socket).emit('client_reopen_connection_with_admin', { // emitting event for specific socket
+    io.to(newConnection.admin.socket).emit('client_reopen_connection_with_admin', { // emitting event for specific socket
       connection: newConnection
     })
   })

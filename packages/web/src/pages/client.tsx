@@ -158,7 +158,7 @@ export default function Client({ socket }: any) {
   }
 
   function handleReopenConnection() {
-    socket.emit('client_reopen_connection', connection.id)
+    socket.emit('client_reopen_connection', user.connectionId)
 
     setConnection(prevState => ({
       ...prevState,

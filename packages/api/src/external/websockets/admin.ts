@@ -3,8 +3,6 @@ import { Socket } from 'socket.io'
 
 import { io } from '../app'
 
-import { IConnection } from '@entities/IConnection'
-
 import { ConnectionRepository } from '@repositories/ConnectionRepository'
 import { MessageRepository } from '@repositories/MessageRepository'
 import { UserRepository } from '@repositories/UserRepository'
@@ -30,7 +28,9 @@ io.on('connect', async (socket: Socket) => {
     callback({ connectionsUnclosed, connectionsWithoutAdmin })
   })
 
-  socket.on('admin_close_connection', async (connection: IConnection, callback) => {
+  socket.on('admin_close_connection', async (connectionId: string, callback) => {
+    const connection = await connectionUseCase.getOne(connectionId)
+
     const newConnection = {
       id: connection.id,
       adminId: connection.adminId,

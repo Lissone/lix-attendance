@@ -178,7 +178,7 @@ export default function Admin({ socket }: any) {
     try {
       socket.emit(
         'admin_close_connection',
-        connectionSelected,
+        connectionSelected.id,
         connectionId => {
           if (connectionSelected.id === connectionId) {
             setConnectionSelected(null)
