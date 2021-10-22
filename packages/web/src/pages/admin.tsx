@@ -198,6 +198,12 @@ export default function Admin({ socket }: any) {
 
   function handleSendMessage() {
     try {
+      if (text.trim() === '') {
+        setText('')
+
+        return
+      }
+
       const params = {
         connectionId: connectionSelected.id,
         clientId: connectionSelected.clientId,

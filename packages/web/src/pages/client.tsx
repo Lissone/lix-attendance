@@ -119,6 +119,12 @@ export default function Client({ socket }: any) {
 
   function handleSendMessage() {
     try {
+      if (text.trim() === '') {
+        setText('')
+
+        return
+      }
+
       const params = {
         connectionId: user.connectionId,
         clientId: user.id,
