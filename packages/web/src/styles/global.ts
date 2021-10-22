@@ -1,5 +1,7 @@
 import { createGlobalStyle } from 'styled-components'
 
+import 'react-toastify/dist/ReactToastify.css'
+
 export const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
@@ -9,16 +11,22 @@ export const GlobalStyle = createGlobalStyle`
 
   :root {
     --red-300: #DF2E2E;
+    --red-200: #FF4F4B;
+
     --blue-200: #A2D2FF;
     --blue-500: #3D56B2;
     --blue-400: #5C7AEA;
+
     --green-400: #57CC99;
+
     --gray-blue-800: #393E46;
     --gray-blue-500: #787A91;
+
     --gray-800: #494949;
     --gray-600: #707070;
     --gray-300: #b3b3b3;
     --gray-100: #D7D7D7;
+    
     --light: #F7F6F2;
     --background: #E6E6E6;
   }

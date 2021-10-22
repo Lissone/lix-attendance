@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -14,13 +15,25 @@ import {
   ChatContent,
   Information,
   AdminMessage,
-  ClientMessage
+  ClientMessage,
+  ClosedConnection
 } from '../styles/client'
 
-interface Admin {
+interface User {
   id: string
   name: string
   email: string
+  socket?: string
+}
+
+interface Connection {
+  id: string
+  adminId: string | null
+  clientId: string
+  closedAt: string
+  messages: Message[]
+  admin: User
+  client: User
 }
 
 interface Message {
@@ -29,13 +42,14 @@ interface Message {
   clientId: string
   text: string
   createdHour?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export default function Client({ socket }: any) {
   const { user, updateClientConnection } = useAuth()
 
-  const [adminConnected, setAdminConnected] = useState<Admin>(undefined)
-  const [messages, setMessages] = useState([] as Message[])
+  const [connection, setConnection] = useState({} as Connection)
   const [text, setText] = useState('')
 
   useEffect(() => {
@@ -46,47 +60,75 @@ export default function Client({ socket }: any) {
 
   useEffect(() => {
     socket.on('admin_connect_with_client', ({ admin }) => {
-      setAdminConnected(admin)
+      setConnection({
+        ...connection,
+        admin
+      })
+    })
+
+    socket.on('admin_close_connection_with_client', response => {
+      setConnection(prevState => ({
+        ...prevState,
+        closedAt: response.connection.closedAt
+      }))
     })
 
     socket.on('admin_send_to_client', ({ message }) => {
       const messageFormatted = {
-        id: message.id,
-        adminId: message.adminId,
-        clientId: message.clientId,
-        text: message.text,
+        ...message,
         createdHour: format(parseISO(message.createdAt), 'HH:mm', {
           locale: ptBR
         })
       }
 
-      setMessages([...messages, messageFormatted])
+      const newMessages = [...connection.messages, messageFormatted]
+
+      setConnection({
+        ...connection,
+        messages: newMessages
+      })
     })
-  }, [adminConnected, messages])
+
+    return () => {
+      socket.off('admin_connect_with_client')
+      socket.off('admin_send_to_client')
+    }
+  }, [connection])
 
   async function getAllMessages() {
-    const { data } = await api.get(`/connections/${user.connectionId}`)
+    try {
+      const { data } = await api.get<Connection>(
+        `/connections/${user.connectionId}`
+      )
 
-    const messagesFormatted = data.messages.map(message => ({
-      id: message.id,
-      adminId: message.adminId,
-      clientId: message.clientId,
-      text: message.text,
-      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
-        locale: ptBR
+      const messagesFormatted = data.messages.map(message => ({
+        ...message,
+        createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+          locale: ptBR
+        })
+      }))
+
+      setConnection({
+        ...data,
+        messages: messagesFormatted
       })
-    }))
-
-    setAdminConnected(data.admin)
-    setMessages(messagesFormatted)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   function handleSendMessage() {
     try {
+      if (text.trim() === '') {
+        setText('')
+
+        return
+      }
+
       const params = {
         connectionId: user.connectionId,
         clientId: user.id,
-        adminId: adminConnected?.id,
+        adminId: connection.admin?.id,
         text
       }
 
@@ -102,11 +144,32 @@ export default function Client({ socket }: any) {
         })
       }
 
-      setMessages([...messages, message])
+      let newMessages
+
+      if (connection.messages) {
+        newMessages = [...connection.messages, message]
+      } else {
+        newMessages = [message]
+      }
+
+      setConnection(prevState => ({
+        ...prevState,
+        messages: newMessages
+      }))
+
       setText('')
     } catch (err) {
       console.error(err)
     }
+  }
+
+  function handleReopenConnection() {
+    socket.emit('client_reopen_connection', user.connectionId)
+
+    setConnection(prevState => ({
+      ...prevState,
+      closedAt: null
+    }))
   }
 
   return (
@@ -120,20 +183,22 @@ export default function Client({ socket }: any) {
           <header>
             <div>
               <span>Atendente</span>
-              {adminConnected ? (
-                <h2>{adminConnected.name}</h2>
+              {connection.admin ? (
+                <h2>{connection.admin.name}</h2>
               ) : (
                 <h2>Aguardando atendimento...</h2>
               )}
             </div>
 
             <Link href="/">
-              <BiExit size={40} />
+              <a>
+                <BiExit size={40} />
+              </a>
             </Link>
           </header>
 
           <ChatContent>
-            {messages.length <= 0 && (
+            {connection.messages?.length <= 0 && (
               <Information>
                 <h4>
                   Envie sua dúvida para nossos atendentes e aguarde eles
@@ -142,7 +207,7 @@ export default function Client({ socket }: any) {
               </Information>
             )}
 
-            {messages.map(message =>
+            {connection.messages?.map(message =>
               message.adminId === null || message.adminId === undefined ? (
                 <ClientMessage key={message.id}>
                   <div>
@@ -161,6 +226,20 @@ export default function Client({ socket }: any) {
                 </AdminMessage>
               )
             )}
+
+            {connection.closedAt && (
+              <ClosedConnection>
+                <h3>Admin fechou a conexão</h3>
+                <span>
+                  Se suas dúvidas ainda não foram respondidas, abra novamente a
+                  conexão com seu admin responsável.
+                </span>
+
+                <button type="button" onClick={handleReopenConnection}>
+                  Reabrir chamado
+                </button>
+              </ClosedConnection>
+            )}
           </ChatContent>
 
           <footer>
@@ -168,9 +247,14 @@ export default function Client({ socket }: any) {
               value={text}
               onChange={event => setText(event.target.value)}
               placeholder="Digite sua mensagem aqui"
+              disabled={!!connection.closedAt}
             />
 
-            <button type="button" onClick={handleSendMessage}>
+            <button
+              type="button"
+              onClick={handleSendMessage}
+              disabled={!!connection.closedAt}
+            >
               Enviar
               <BiSend size={20} />
             </button>

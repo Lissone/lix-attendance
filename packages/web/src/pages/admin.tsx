@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { format, parseISO, getTime } from 'date-fns'
 import ptBR from 'date-fns/locale/pt-BR'
 import { BiSend, BiExit } from 'react-icons/bi'
+import { AiOutlineLock } from 'react-icons/ai'
 
 import { useAuth } from '../hooks/useAuth'
 import { api } from '../services/api'
@@ -40,6 +41,8 @@ interface Message {
   clientId: string
   text: string
   createdHour?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export default function Admin({ socket }: any) {
@@ -59,7 +62,7 @@ export default function Admin({ socket }: any) {
 
       setLoad(true)
     }
-  }, [connectionSelected])
+  }, [])
 
   useEffect(() => {
     socket.on('admin_list_clients_without_admin', connectionsWithoutAdmin => {
@@ -77,10 +80,7 @@ export default function Admin({ socket }: any) {
     socket.on('admin_receive_message', ({ clientId, message }) => {
       if (connectionSelected.clientId === clientId) {
         const messageFormatted = {
-          id: message.id,
-          adminId: message.adminId,
-          clientId: message.clientId,
-          text: message.text,
+          ...message,
           createdHour: format(parseISO(message.createdAt), 'HH:mm', {
             locale: ptBR
           })
@@ -95,9 +95,14 @@ export default function Admin({ socket }: any) {
       }
     })
 
+    socket.on('client_reopen_connection_with_admin', ({ connection }) => {
+      setConnections(prevState => [connection, ...prevState])
+    })
+
     return () => {
       socket.off('admin_list_clients_without_admin')
       socket.off('admin_receive_message')
+      socket.off('client_reopen_connection_with_admin')
     }
   }, [connections, connectionsUnclosed, connectionSelected])
 
@@ -114,62 +119,90 @@ export default function Admin({ socket }: any) {
             getTime(new Date(b.createdAt)) - getTime(new Date(a.createdAt))
         )
 
-        setConnectionsUnclosed(connectionsUnclosed)
+        setConnectionsUnclosed(newConnections.connectionsUnclosed)
         setConnections(allConnections)
       }
     )
   }
 
   function handleTalkClient(connectionId: string) {
-    api.get(`/connections/${connectionId}`).then(({ data }) => {
-      const messagesFormated = data.messages.map(message => ({
-        id: message.id,
-        adminId: message.adminId,
-        clientId: message.clientId,
-        text: message.text,
+    try {
+      api.get<Connection>(`/connections/${connectionId}`).then(({ data }) => {
+        const messagesFormatted = data.messages.map(message => ({
+          ...message,
+          createdHour: format(parseISO(message.createdAt), 'HH:mm', {
+            locale: ptBR
+          })
+        }))
+
+        setConnectionSelected({
+          ...data,
+          messages: messagesFormatted
+        })
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  async function handleConnectWithClient(connectionId: string) {
+    try {
+      const { data } = await api.get<Connection>(`/connections/${connectionId}`)
+
+      const messagesFormatted = data.messages.map(message => ({
+        ...message,
         createdHour: format(parseISO(message.createdAt), 'HH:mm', {
           locale: ptBR
         })
       }))
 
-      setConnectionSelected({
-        ...data,
-        messages: messagesFormated
+      const params = {
+        clientId: data.clientId,
+        adminId: user.id
+      }
+
+      socket.emit('admin_in_support', params, newConnectionsUnclosed => {
+        setConnectionsUnclosed(newConnectionsUnclosed)
+
+        setConnectionSelected({
+          ...data,
+          messages: messagesFormatted
+        })
       })
-    })
+    } catch (err) {
+      console.error(err)
+    }
   }
 
-  async function handleConnectWithClient(connectionId: string) {
-    const { data } = await api.get(`/connections/${connectionId}`)
+  function handleCloseConnection() {
+    try {
+      socket.emit(
+        'admin_close_connection',
+        connectionSelected.id,
+        connectionId => {
+          if (connectionSelected.id === connectionId) {
+            setConnectionSelected(null)
+          }
 
-    const messagesFormated = data.messages.map(message => ({
-      id: message.id,
-      adminId: message.adminId,
-      clientId: message.clientId,
-      text: message.text,
-      createdHour: format(parseISO(message.createdAt), 'HH:mm', {
-        locale: ptBR
-      })
-    }))
+          const connectionsFiltered = connections.filter(
+            connection => connection.id !== connectionId
+          )
 
-    const params = {
-      clientId: data.clientId,
-      adminId: user.id
+          setConnections(connectionsFiltered)
+        }
+      )
+    } catch (err) {
+      console.error(err)
     }
-
-    socket.emit('admin_in_support', params, newConnectionsUnclosed => {
-      setConnectionsUnclosed(newConnectionsUnclosed)
-
-      setConnectionSelected({
-        ...data,
-        messages: messagesFormated
-      })
-    })
   }
 
   function handleSendMessage() {
     try {
-      console.log(user)
+      if (text.trim() === '') {
+        setText('')
+
+        return
+      }
 
       const params = {
         connectionId: connectionSelected.id,
@@ -186,8 +219,6 @@ export default function Admin({ socket }: any) {
           locale: ptBR
         })
       }
-
-      console.log(message)
 
       const newMessages = [...connectionSelected.messages, message]
 
@@ -217,7 +248,9 @@ export default function Admin({ socket }: any) {
             </div>
 
             <Link href="/">
-              <BiExit size={35} />
+              <a>
+                <BiExit size={35} />
+              </a>
             </Link>
           </header>
 
@@ -259,7 +292,10 @@ export default function Admin({ socket }: any) {
                 <h2>{connectionSelected.client.name}</h2>
               </div>
 
-              {/* <RiArrowGoBackFill size={40} /> */}
+              <button type="button" onClick={() => handleCloseConnection()}>
+                <AiOutlineLock size={20} />
+                Fechar conexão
+              </button>
             </header>
 
             <ChatContent>
@@ -299,7 +335,9 @@ export default function Admin({ socket }: any) {
           </ChatContainer>
         ) : (
           <ChatEmpty>
-            <h1>Escolha um usuário para tirar as dúvidas dele</h1>
+            <img src="/logo.svg" alt="LixAttendance" />
+
+            <span>Escolha um usuário para tirar as dúvidas dele.</span>
           </ChatEmpty>
         )}
       </Container>

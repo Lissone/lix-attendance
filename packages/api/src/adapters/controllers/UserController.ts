@@ -29,14 +29,24 @@ export class UserController {
         socket: user.socket
       })
 
-      if (user.type === 'client') {
-        const connection = await this.useCaseConnection.getOneByClientId(userUpdated.id)
+      const connectionByClient = await this.useCaseConnection.getOneByClientId(userUpdated.id)
 
-        if (!connection) {
+      if (user.type === 'client') {
+        const connectionByAdmin = await this.useCaseConnection.getAllByAdminId(userUpdated.id)
+
+        if (connectionByAdmin.length > 0) {
+          return res.status(406).json({ message: 'It is not acceptable for an admin to become a customer' })
+        }
+
+        if (!connectionByClient) {
           return res.status(200).json({ user: userUpdated })
         }
 
-        return res.status(200).json({ user: userUpdated, connectionId: connection.id })
+        return res.status(200).json({ user: userUpdated, connectionId: connectionByClient.id })
+      } else {
+        if (connectionByClient) {
+          return res.status(406).json({ message: 'It is not accepted a client with connection to become an admin' })
+        }
       }
 
       return res.status(200).json({ user: userUpdated })

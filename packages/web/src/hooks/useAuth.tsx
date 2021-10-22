@@ -1,5 +1,6 @@
 import { createContext, useContext, ReactNode, useState } from 'react'
 import { useRouter } from 'next/router'
+import { toast } from 'react-toastify'
 
 import { api } from '../services/api'
 
@@ -11,6 +12,17 @@ interface User {
   socket: string
   connectionId?: string
   createdAt?: Date
+}
+
+interface UserResponse {
+  user: User
+  connectionId?: string
+}
+
+interface ErrorResponse {
+  response: {
+    status: number
+  }
 }
 
 interface AuthContextType {
@@ -32,7 +44,7 @@ export function AuthProvider({ children }: AuthContextProviderProps) {
 
   async function signIn(newUser: User) {
     try {
-      const { data } = await api.post('/users', { user: newUser })
+      const { data } = await api.post<UserResponse>('/users', { user: newUser })
 
       setUser({
         ...newUser,
@@ -45,8 +57,19 @@ export function AuthProvider({ children }: AuthContextProviderProps) {
       } else {
         router.push('/admin')
       }
-    } catch (err) {
-      throw new Error('Erro na api')
+    } catch (err: ErrorResponse | any) {
+      if (err.response.status === 406) {
+        toast.error(
+          'Email já está cadastrado como usuário oposto do selecionado.',
+          {
+            hideProgressBar: true
+          }
+        )
+
+        throw new Error('Usuário não pode ser cadastrado')
+      } else {
+        throw new Error('Erro na api')
+      }
     }
   }
 

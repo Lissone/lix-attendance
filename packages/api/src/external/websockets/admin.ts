@@ -28,6 +28,27 @@ io.on('connect', async (socket: Socket) => {
     callback({ connectionsUnclosed, connectionsWithoutAdmin })
   })
 
+  socket.on('admin_close_connection', async (connectionId: string, callback) => {
+    const connection = await connectionUseCase.getOne(connectionId)
+
+    const newConnection = {
+      id: connection.id,
+      adminId: connection.adminId,
+      clientId: connection.clientId,
+      createdAt: connection.createdAt,
+      updatedAt: connection.updatedAt,
+      closedAt: new Date()
+    }
+
+    const connectionUpdated = await connectionUseCase.update(newConnection)
+
+    io.to(connection.client.socket).emit('admin_close_connection_with_client', { // emitting event for specific socket
+      connection: connectionUpdated
+    })
+
+    callback(connectionUpdated.id)
+  })
+
   socket.on('admin_send_message', async ({ connectionId, clientId, adminId, text }) => { // receive parameters and callback function to return response
     const message = await messageUseCase.create({ connectionId, adminId, clientId, text })
 

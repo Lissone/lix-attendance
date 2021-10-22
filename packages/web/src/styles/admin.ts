@@ -43,6 +43,8 @@ export const SidebarChat = styled.aside`
   > div {
     height: calc(100vh - 113px);
 
+    overflow-y: scroll;
+
     background: var(--gray-100);
   }
 `
@@ -73,7 +75,8 @@ const colors = {
 }
 
 export const ButtonContact = styled.button<ButtonContactProps>`
-  padding: 0.8rem 1.5rem;
+  padding: 0.8rem 0;
+  width: 8.5rem;
 
   border: 1px solid var(--gray-600);
   border-radius: 0.35rem;
@@ -116,6 +119,26 @@ export const ChatContainer = styled.div`
 
     h2 {
       color: var(--light);
+    }
+
+    button {
+      padding: 0.8rem 1.5rem;
+
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      border: 0;
+      border-radius: 0.35rem;
+
+      color: var(--light);
+      background: var(--red-200);
+
+      transition: filter 0.2s;
+
+      &:hover {
+        filter: brightness(0.9);
+      }
     }
   }
 
@@ -165,18 +188,30 @@ export const ChatContainer = styled.div`
 export const ChatEmpty = styled.div`
   height: 100%;
   width: 50rem;
+  padding-top: 12rem;
 
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
 
   box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
 
   background: var(--light);
+
+  span {
+    width: 60%;
+    margin-top: 2rem;
+
+    color: var(--gray-blue-500);
+
+    font-size: 1.8rem;
+    text-align: center;
+  }
 `
 
 export const ChatContent = styled.div`
+  height: 100%;
   padding: 0 1rem;
   margin-bottom: 5.5rem;
 
