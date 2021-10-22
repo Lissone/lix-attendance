@@ -119,7 +119,7 @@ export default function Admin({ socket }: any) {
             getTime(new Date(b.createdAt)) - getTime(new Date(a.createdAt))
         )
 
-        setConnectionsUnclosed(connectionsUnclosed)
+        setConnectionsUnclosed(newConnections.connectionsUnclosed)
         setConnections(allConnections)
       }
     )
