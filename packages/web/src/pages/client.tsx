@@ -138,12 +138,18 @@ export default function Client({ socket }: any) {
         })
       }
 
-      const newMessages = [...connection.messages, message]
+      let newMessages
 
-      setConnection({
-        ...connection,
+      if (connection.messages) {
+        newMessages = [...connection.messages, message]
+      } else {
+        newMessages = [message]
+      }
+
+      setConnection(prevState => ({
+        ...prevState,
         messages: newMessages
-      })
+      }))
 
       setText('')
     } catch (err) {
