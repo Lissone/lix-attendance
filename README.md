@@ -77,7 +77,7 @@ npm run
 
 ### Database configuration
 
-É necessário criar o database antes de executar a api (dbLixAttendance).
+You must create the database before running an api (dbLixAttendance).
 
 ```typescript
 // .\src\external\database\dbConfig.ts
