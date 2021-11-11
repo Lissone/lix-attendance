@@ -61,8 +61,7 @@ The first version of the project was developed at the Next Level Week 5 (NLW) ma
 
 ## Usage
 
-You can use this project as a template for another one, or clone it on your pc using the command:
-
+You can clone it on your pc using the command:
 ```bash
 git clone https://github.com/Lissone/lix-attendance.git
 cd lix-attendance
