@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img alt="LixAttendance" src="./packages/web/public/logo.svg" width="350px">
+  <img alt="LixAttendance logo" src="./packages/web/public/logo.svg" width="350px">
 </h1>
 
 <p align="center">
@@ -31,47 +31,54 @@
 ## Description
 
 Project developed with the intention of deepening knowledge in websockets with real-time applications and integration with htttp servers.
+
 It consists of a support chat site between customer with question and admin respondent, where admin can choose customer he wants to respond according to priority (based on time of message sent), and close his connection once queries are answered . Anyone can test the application in order to contract the service for their own website by contacting the responsible developer (myself).
+
 The first version of the project was developed at the Next Level Week 5 (NLW) marathon, taught by Daniela Leão, from April 19 to 25, 2021.
 
 ## Requirements
 
-* [Yarn](https://yarnpkg.com/)
-* [Nodejs](https://nodejs.org/en/)
-* [SqlServer](https://www.microsoft.com/pt-br/sql-server/sql-server-downloads)
+- [Npm](https://www.npmjs.com/)
+- [Yarn](https://yarnpkg.com/)
+- [Nodejs](https://nodejs.org/en/)
+- [SqlServer](https://www.microsoft.com/pt-br/sql-server/sql-server-downloads)
 
 ## Technologies
 
 ### Backend (Api)
-* NodeJs
-* Typescript
-* Express
-* Socket.io
-* TypeORM
-* SqlServer
-* ESLint
+
+- Nodejs
+- Typescript
+- Express
+- Socket.io
+- TypeORM
+- SqlServer
+- ESLint
 
 ### Front End
-* Next
-* Typescript
-* StyledComponents
-* Socket.io-client
-* ESLint (Airbnb config + pessoal rules)
-* Prettier
+
+- Nextjs
+- Typescript
+- StyledComponents
+- Socket.io-client
+- ESLint (Airbnb config + pessoal rules)
+- Prettier
 
 ## Usage
 
 You can clone it on your pc using the command:
+
 ```bash
 git clone https://github.com/Lissone/lix-attendance.git
 cd lix-attendance
 ```
 
 Install dependencies using:
+
 ```bash
 yarn
 #or
-npm run
+npm install
 ```
 
 ### Database configuration
@@ -118,6 +125,7 @@ DB_HOST=localhost
 ```
 
 Run api:
+
 ```bash
 cd .\packages\api\
 yarn dev
@@ -126,6 +134,7 @@ npm run dev
 ```
 
 Run web:
+
 ```bash
 cd .\packages\web\
 yarn dev
